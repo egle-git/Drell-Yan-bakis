@@ -60,7 +60,7 @@ class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 
 
       edm::EDGetTokenT<std::vector<pat::Muon>> muonToken_;
-      edm::EDGetTokenT<double> weightToken_;
+      edm::EDGetTokenT<GenEventInfoProduct> weightToken_;
 
 
       TH1D *simh_muon_pt;
@@ -79,10 +79,9 @@ class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
       TH1D *simh_Z_mass_bw;
       TFile *fs;
 
-      double weight_sum = 0; 
+      double weight_sum; 
       double xsec = 20480; // 6422 for first, 20480 for second
-      double lumi = 6658;
-      bool run1 = true;
+      double lumi = 6422;
 };
 
 // constants, enums and typedefs
@@ -92,7 +91,7 @@ class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 
 MiniAnalyzerSim::MiniAnalyzerSim(const edm::ParameterSet& iConfig):
       muonToken_(consumes<std::vector<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
-      weightToken_(consumes<double>(edm::InputTag("generator", "weight")))
+      weightToken_(consumes<GenEventInfoProduct>(iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")))
 
 {
    usesResource("TFileService");
@@ -124,25 +123,15 @@ MiniAnalyzerSim::~MiniAnalyzerSim()
 void
 MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   // std::cout << "[DEBUG] run1 = " << (run1 ? "true" : "false") << std::endl;
 
    using namespace edm;
 
-   edm::Handle<double> weightHandle;
+   edm::Handle<GenEventInfoProduct> weightHandle;
    iEvent.getByToken(weightToken_, weightHandle);
-   double event_weight = weightHandle.isValid() ? *weightHandle : 1.0;
+   double event_weight = weightHandle.isValid() ? weightHandle->weight() : 1.0;
 
-
-   // weight_sum += event_weight;
-   // std::cout << "weight sum = " << weight_sum << std::endl;
-   // std::cout << "event weight: " << event_weight << std::endl;
-
-   
-   std::cout << "WEIGHTSUM = " << weight_sum << std::endl;
    double weight = event_weight * xsec * lumi / weight_sum;
    std::cout << "weight: " << weight << std::endl;
-   std::cout << "xsec: " << xsec << std::endl;
-   std::cout << "lumi: " << lumi << std::endl;
 
    edm::Handle<std::vector<pat::Muon>> muons;
    iEvent.getByToken(muonToken_, muons);
@@ -231,16 +220,15 @@ MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    ESHandle<SetupData> pSetup;
    iSetup.get<SetupRecord>().get(pSetup);
 #endif
-}
 */
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
 MiniAnalyzerSim::beginJob()
 {
-   fs = new TFile("simoutput2.root","RECREATE");
+   fs = new TFile("simoutput.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
 
-   std::ifstream inFile("weight_sum2.txt");
+   std::ifstream inFile("weight_sum.txt"); //weight_sum.txt for first, weight_sum2.txt for second
    if (inFile.is_open())
    {
       inFile >> weight_sum;
@@ -252,7 +240,6 @@ MiniAnalyzerSim::beginJob()
 void 
 MiniAnalyzerSim::endJob() 
 {
-   std::cout << "ENDJOB" << std::endl;
    fs->cd();
    simh_muon_pt->Write();
    simh_muon_eta->Write();
@@ -270,12 +257,6 @@ MiniAnalyzerSim::endJob()
    simh_Z_mass_bw->Write();
    fs->Close();
 
-   // std::ofstream outFile("weight_sum2.txt");
-   // if (outFile.is_open())
-   // {
-   //    outFile << weight_sum << std::endl;
-   //    outFile.close();
-   // }
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

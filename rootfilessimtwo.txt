@@ -1,1 +1,1 @@
-root://eospublic.cern.ch//eos/opendata/cms/mc/RunIISummer20UL16MiniAODv2/DYJetsToLL_M-10to50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v2/2520000/004C9E04-3C3F-4448-B60F-6BF1AE1E7943.root
+root://eospublic.cern.ch//eos/opendata/cms/mc/RunIISummer20UL16MiniAODv2/DYJetsToLL_M-10to50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v2/2520000/00AFEF80-1464-D049-A120-8588A9450F91.root

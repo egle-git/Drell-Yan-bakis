@@ -40,16 +40,16 @@ for real_name, sim_name in hist_pairs.items():
 
     hist_sim_combined.SetLineColor(ROOT.kRed)
     hist_sim_combined.SetLineWidth(2)
-
-    hist_real.Draw("HIST")
-    hist_sim_combined.Draw("HIST SAME")
+    
+    hist_sim_combined.Draw("HIST")
+    hist_real.Draw("HIST SAME")
 
     legend = ROOT.TLegend(0.7, 0.7, 0.9, 0.85)
     legend.AddEntry(hist_real, "Real Data", "l")
     legend.AddEntry(hist_sim_combined, "Simulated Data", "l")
     legend.Draw()
 
-    canvas.SaveAs(f"{real_name}_combined.png")
+    canvas.SaveAs(f"comb{real_name}.png")
 
 file_real.Close()
 file_sim1.Close()

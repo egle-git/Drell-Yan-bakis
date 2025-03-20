@@ -18,20 +18,10 @@ process.source = cms.Source("PoolSource",
 )
 
 
-process.hltHighLevel = cms.EDFilter("HLTHighLevel",
-   TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
-   HLTPaths = cms.vstring('HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ*'),
-   eventSetupPathsKey = cms.string(''),
-   andOr = cms.bool(True),
-   throw = cms.bool(True)
-)
-
-process.demo = cms.EDAnalyzer('MiniAnalyzerSim',
+process.demo = cms.EDAnalyzer('MiniAnalyzer_weightsum',
                               muons = cms.InputTag("slimmedMuons"),
-                              xsec = cms.double(6422), #6422 for first, 20480 for second
-                              lumi = cms.double(6658),
                               GenEventInfo = cms.untracked.InputTag("generator")
 )
 
 
-process.p = cms.Path(process.hltHighLevel+process.demo)
+process.p = cms.Path(process.demo)
