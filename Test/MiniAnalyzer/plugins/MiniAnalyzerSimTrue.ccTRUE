@@ -45,10 +45,10 @@
 
 // edm::one::WatchRuns /////after SharedResources, before >
 
-class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
+class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResources> {
    public:
-      explicit MiniAnalyzerSim(const edm::ParameterSet&);
-      ~MiniAnalyzerSim();
+      explicit MiniAnalyzerSimTrue(const edm::ParameterSet&);
+      ~MiniAnalyzerSimTrue();
 
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -58,18 +58,18 @@ class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
       virtual void endJob() override;
 
-
-      edm::EDGetTokenT<std::vector<pat::Muon>> muonToken_;
+      edm::EDGetToken<std::vector<reco::GenParticle>> particles;
+      //edm::EDGetTokenT<std::vector<pat::Muon>> muonToken_;
       edm::EDGetTokenT<GenEventInfoProduct> weightToken_;
 
 
-      TH1D *simh_muon_pt;
-      TH1D *simh_muon_eta;
-      TH1D *simh_muon_phi;
-      TH1D *simh_muon_energy;
-      TH1D *simh_muon_mass;
-      TH1D *simh_muon_leading;
-      TH1D *simh_muon_subleading;
+      TH1D *simh_particle_pt;
+      TH1D *simh_particle_eta;
+      TH1D *simh_particle_phi;
+      TH1D *simh_particle_energy;
+      TH1D *simh_particle_mass;
+      TH1D *simh_particle_leading;
+      TH1D *simh_particle_subleading;
       TH1D *simh_Z_pt;
       TH1D *simh_Z_eta;
       TH1D *simh_Z_phi;
@@ -80,8 +80,8 @@ class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
       TFile *fs;
 
       double weight_sum; 
-      double xsec = 6422; // 6422 for first, 20480 for second
-      double lumi = 6658;
+      double xsec = 20480; // 6422 for first, 20480 for second
+      double lumi = 6422;
 };
 
 // constants, enums and typedefs
@@ -89,19 +89,19 @@ class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 // constructors and destructor
 
 
-MiniAnalyzerSim::MiniAnalyzerSim(const edm::ParameterSet& iConfig):
-      muonToken_(consumes<std::vector<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
+MiniAnalyzerSimTrue::MiniAnalyzerSimTrue(const edm::ParameterSet& iConfig):
+      particles(consumes<std::vector<reco::GenParticle>>(iConfig.getParameter<edm::InputTag>("particles"))),
       weightToken_(consumes<GenEventInfoProduct>(iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")))
 
 {
    usesResource("TFileService");
-   simh_muon_pt = new TH1D("simh_muon_pt", "Muon PT", 100, 0, 150);
-   simh_muon_eta = new TH1D("simh_muon_eta", "Muon ETA", 100, -2.5, 2.5);
-   simh_muon_phi = new TH1D("simh_muon_phi", "Muon PHI", 100, -3.14, 3.14);
-   simh_muon_energy = new TH1D("simh_muon_energy", "Muon ENERGY", 100, 0, 150);
-   simh_muon_mass = new TH1D("simh_muon_mass", "Muon MASS", 100, 0.1055, 0.1059);
-   simh_muon_leading = new TH1D("simh_muon_leading", "Muon LEADING", 100, 0, 150);
-   simh_muon_subleading = new TH1D("simh_muon_subleading", "Muon SUBLEADING", 100, 0, 150);
+   simh_particle_pt = new TH1D("simh_particle_pt", "Particle PT", 100, 0, 150);
+   simh_particle_eta = new TH1D("simh_particle_eta", "Particle ETA", 100, -2.5, 2.5);
+   simh_particle_phi = new TH1D("simh_particle_phi", "Particle PHI", 100, -3.14, 3.14);
+   simh_particle_energy = new TH1D("simh_particle_energy", "Particle ENERGY", 100, 0, 150);
+   simh_particle_mass = new TH1D("simh_particle_mass", "Particle MASS", 100, 0.1055, 0.1059);
+   simh_particle_leading = new TH1D("simh_particle_leading", "Particle LEADING", 100, 0, 150);
+   simh_particle_subleading = new TH1D("simh_particle_subleading", "Particle SUBLEADING", 100, 0, 150);
 
    simh_Z_pt = new TH1D("simh_Z_pt", "Z Boson PT", 100, 0, 300);
    simh_Z_eta = new TH1D("simh_Z_eta", "Z Boson ETA", 100, -2.5, 2.5);
@@ -113,7 +113,7 @@ MiniAnalyzerSim::MiniAnalyzerSim(const edm::ParameterSet& iConfig):
 }
 
 
-MiniAnalyzerSim::~MiniAnalyzerSim()
+MiniAnalyzerSimTrue::~MiniAnalyzerSimTrue()
 {
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
@@ -121,7 +121,7 @@ MiniAnalyzerSim::~MiniAnalyzerSim()
 
 
 void
-MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
    using namespace edm;
@@ -133,61 +133,65 @@ MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    double weight = event_weight * xsec * lumi / weight_sum;
    std::cout << "weight: " << weight << std::endl;
 
-   edm::Handle<std::vector<pat::Muon>> muons;
-   iEvent.getByToken(muonToken_, muons);
+   edm::Handle<std::vector<reco::GenParticle>> particles;
+   //edm::Handle<std::vector<pat::Muon>> muons;
+   iEvent.getByToken(GenParticleToken, particles);
 
-   if(muons.isValid() && muons->size() > 2){
-      const pat::Muon* muon1 = nullptr;
-      const pat::Muon* muon2 = nullptr;
-      for (const auto& muon : *muons){
-         double isoSum = muon.pfIsolationR03().sumChargedHadronPt + muon.pfIsolationR03().sumNeutralHadronEt + muon.pfIsolationR03().sumPhotonEt;
-         double muonPt = muon.pt();
-         double relIso = isoSum / muonPt;
+   if(particles.isValid() && particles->size() > 2){
+      const reco::GenParticle* particle1 = nullptr;
+      const reco::GenParticle* particle2 = nullptr;
+      for (const auto& genParticle : *genParticles){
+        if (abs(genParticle.pdgId()) == 13 && genParticle.status() == 1) {
+            double isoSum = particle.pfIsolationR03().sumChargedHadronPt + particle.pfIsolationR03().sumNeutralHadronEt + particle.pfIsolationR03().sumPhotonEt;
+            double particlePt = particle.pt();
+            double relIso = isoSum / particlePt;
 
-         if (isoSum < 100 && relIso < 0.15){
-            if (!muon1 || muon.pt() > muon1->pt()) {
-               muon2 = muon1;
-               muon1 = &muon;
+            if (isoSum < 100 && relIso < 0.15){
+                if (!particle1 || particle.pt() > particle1->pt()) {
+                    particle2 = particle1;
+                    particle1 = &particle;
+                }
+                else if (!particle2 || particle.pt() > particle2->pt()) {
+                    particle2 = &particle;
+                }
             }
-            else if (!muon2 || muon.pt() > muon2->pt()) {
-               muon2 = &muon;
-            }
-         }
-      }
-      if (muon1 && muon2){
+        }
          
-         double pt1 = muon1->pt();
-         double eta1 = muon1->eta();
-         double phi1 = muon1->phi();
-         double energy1 = muon1->energy();
-         double mass1 = muon1->mass();
+      }
+      if (particle1 && particle2){
+         
+         double pt1 = particle1->pt();
+         double eta1 = particle1->eta();
+         double phi1 = particle1->phi();
+         double energy1 = particle1->energy();
+         double mass1 = particle1->mass();
 
-         double pt2 = muon2->pt();
-         double eta2 = muon2->eta();
-         double phi2 = muon2->phi();
-         double energy2 = muon2->energy();
-         double mass2 = muon2->mass();
+         double pt2 = particle2->pt();
+         double eta2 = particle2->eta();
+         double phi2 = particle2->phi();
+         double energy2 = particle2->energy();
+         double mass2 = particle2->mass();
 
          if (pt1>=20 && pt2>=12) {
-            simh_muon_pt->Fill(pt1, weight);
-            simh_muon_pt->Fill(pt2, weight);
-            simh_muon_eta->Fill(eta1, weight);
-            simh_muon_eta->Fill(eta2, weight);
-            simh_muon_phi->Fill(phi1, weight);
-            simh_muon_phi->Fill(phi2, weight);
-            simh_muon_energy->Fill(energy1, weight);
-            simh_muon_energy->Fill(energy2, weight);
-            simh_muon_mass->Fill(mass1, weight);
-            simh_muon_mass->Fill(mass2, weight);
-            simh_muon_leading->Fill(pt1, weight);
-            simh_muon_subleading->Fill(pt2, weight);
+            simh_particle_pt->Fill(pt1, weight);
+            simh_particle_pt->Fill(pt2, weight);
+            simh_particle_eta->Fill(eta1, weight);
+            simh_particle_eta->Fill(eta2, weight);
+            simh_particle_phi->Fill(phi1, weight);
+            simh_particle_phi->Fill(phi2, weight);
+            simh_particle_energy->Fill(energy1, weight);
+            simh_particle_energy->Fill(energy2, weight);
+            simh_particle_mass->Fill(mass1, weight);
+            simh_particle_mass->Fill(mass2, weight);
+            simh_particle_leading->Fill(pt1, weight);
+            simh_particle_subleading->Fill(pt2, weight);
          
-            std::cout << "Muon 1: pt=" << pt1 << ", eta=" << eta1 << ", phi=" << phi1 << ", energy=" << energy1 << ", mass=" << mass1 << std::endl;
-            std::cout << "Muon 2: pt=" << pt2 << ", eta=" << eta2 << ", phi=" << phi2 << ", energy=" << energy2 << ", mass=" << mass2 << std::endl;
+            std::cout << "Particle 1: pt=" << pt1 << ", eta=" << eta1 << ", phi=" << phi1 << ", energy=" << energy1 << ", mass=" << mass1 << std::endl;
+            std::cout << "Particle 2: pt=" << pt2 << ", eta=" << eta2 << ", phi=" << phi2 << ", energy=" << energy2 << ", mass=" << mass2 << std::endl;
 
-            math::PtEtaPhiELorentzVector muon1P4(pt1, eta1, phi1, energy1);
-            math::PtEtaPhiELorentzVector muon2P4(pt2, eta2, phi2, energy2);
-            auto ZbosonP4 = muon1P4 + muon2P4;
+            math::PtEtaPhiELorentzVector particle1P4(pt1, eta1, phi1, energy1);
+            math::PtEtaPhiELorentzVector particle2P4(pt2, eta2, phi2, energy2);
+            auto ZbosonP4 = particle1P4 + particle2P4;
 
             double Zboson_pt = ZbosonP4.pt();
             double Zboson_eta = ZbosonP4.eta();
@@ -224,7 +228,7 @@ MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-MiniAnalyzerSim::beginJob()
+MiniAnalyzerSimTrue::beginJob()
 {
    fs = new TFile("simoutput.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
 
@@ -238,16 +242,16 @@ MiniAnalyzerSim::beginJob()
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-MiniAnalyzerSim::endJob() 
+MiniAnalyzerSimTrue::endJob() 
 {
    fs->cd();
-   simh_muon_pt->Write();
-   simh_muon_eta->Write();
-   simh_muon_phi->Write();
-   simh_muon_energy->Write();
-   simh_muon_mass->Write();
-   simh_muon_leading->Write();
-   simh_muon_subleading->Write();
+   simh_particle_pt->Write();
+   simh_particle_eta->Write();
+   simh_particle_phi->Write();
+   simh_particle_energy->Write();
+   simh_particle_mass->Write();
+   simh_particle_leading->Write();
+   simh_particle_subleading->Write();
    simh_Z_pt->Write();
    simh_Z_eta->Write();
    simh_Z_phi->Write();
@@ -261,7 +265,7 @@ MiniAnalyzerSim::endJob()
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-MiniAnalyzerSim::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+MiniAnalyzerSimTrue::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -270,4 +274,4 @@ MiniAnalyzerSim::fillDescriptions(edm::ConfigurationDescriptions& descriptions) 
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(MiniAnalyzerSim);
+DEFINE_FWK_MODULE(MiniAnalyzerSimTrue);

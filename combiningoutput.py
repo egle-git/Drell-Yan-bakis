@@ -41,8 +41,8 @@ for real_name, sim_name in hist_pairs.items():
     hist_sim_combined.SetLineColor(ROOT.kRed)
     hist_sim_combined.SetLineWidth(2)
     
-    hist_sim_combined.Draw("HIST")
-    hist_real.Draw("HIST SAME")
+    hist_real.Draw("HIST")
+    hist_sim_combined.Draw("HIST SAME")
 
     legend = ROOT.TLegend(0.7, 0.7, 0.9, 0.85)
     legend.AddEntry(hist_real, "Real Data", "l")
