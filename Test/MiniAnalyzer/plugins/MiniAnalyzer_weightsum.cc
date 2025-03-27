@@ -21,6 +21,7 @@
 #include "TFile.h"
 #include "TH1D.h"
 #include <fstream>
+#include <cmath>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -96,9 +97,12 @@ MiniAnalyzer_weightsum::analyze(const edm::Event& iEvent, const edm::EventSetup&
    iEvent.getByToken(weightToken_, weightHandle);
    double event_weight = weightHandle.isValid() ? weightHandle->weight() : 1.0;
 
-   weight_sum += event_weight;
+   double norm_weight = event_weight / std::abs(event_weight);
+
+   weight_sum += norm_weight;
    std::cout << "weight sum = " << weight_sum << std::endl;
    std::cout << "event weight: " << event_weight << std::endl;
+   std::cout << "norm weight: " << norm_weight << std::endl;
 
 }
    

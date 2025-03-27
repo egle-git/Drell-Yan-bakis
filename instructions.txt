@@ -6,7 +6,7 @@ skaičiuojant svorius:
 
 fillininat histogramas:
 1) ConfFile_cfgSim.py  -  pirmas root failas
-2) ConfFile_cfgSim.py ir MiniAnalyzerSim.cc  -  pirma xsec vertė
+2) MiniAnalyzerSim.cc  -  pirma xsec vertė
 3) MiniAnalyzerSim.cc  -  pirmas output failas
 4) MiniAnalyzerSim.cc  -  pirmas weight_sum failas
 5) scram b ir cms run

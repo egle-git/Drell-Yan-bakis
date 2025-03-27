@@ -31,9 +31,11 @@
 
 //classes to extract Muon information
 #include "DataFormats/PatCandidates/interface/Muon.h"
+
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+
 
 // class declaration
 
@@ -58,8 +60,8 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
       virtual void endJob() override;
 
-      edm::EDGetToken<std::vector<reco::GenParticle>> particles;
-      //edm::EDGetTokenT<std::vector<pat::Muon>> muonToken_;
+      edm::EDGetTokenT<std::vector<reco::GenParticle>> particles;
+      edm::EDGetTokenT<std::vector<reco::GenParticle>> GenParticleToken_;
       edm::EDGetTokenT<GenEventInfoProduct> weightToken_;
 
 
@@ -80,8 +82,8 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
       TFile *fs;
 
       double weight_sum; 
-      double xsec = 20480; // 6422 for first, 20480 for second
-      double lumi = 6422;
+      double xsec = 6422; // 6422 for first, 20480 for second
+      double lumi = 16494;
 };
 
 // constants, enums and typedefs
@@ -90,10 +92,13 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
 
 
 MiniAnalyzerSimTrue::MiniAnalyzerSimTrue(const edm::ParameterSet& iConfig):
-      particles(consumes<std::vector<reco::GenParticle>>(iConfig.getParameter<edm::InputTag>("particles"))),
+      particles(consumes<std::vector<reco::GenParticle>>(iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))),
       weightToken_(consumes<GenEventInfoProduct>(iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")))
+      //GenParticleToken_(consumes<std::vector<reco::GenParticle>>(iConfig.getUntrackedParameter<edm::InputTag>("GenParticle")))
+
 
 {
+
    usesResource("TFileService");
    simh_particle_pt = new TH1D("simh_particle_pt", "Particle PT", 100, 0, 150);
    simh_particle_eta = new TH1D("simh_particle_eta", "Particle ETA", 100, -2.5, 2.5);
@@ -135,27 +140,21 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
    edm::Handle<std::vector<reco::GenParticle>> particles;
    //edm::Handle<std::vector<pat::Muon>> muons;
-   iEvent.getByToken(GenParticleToken, particles);
+   iEvent.getByToken(GenParticleToken_, particles);
 
    if(particles.isValid() && particles->size() > 2){
       const reco::GenParticle* particle1 = nullptr;
       const reco::GenParticle* particle2 = nullptr;
-      for (const auto& genParticle : *genParticles){
-        if (abs(genParticle.pdgId()) == 13 && genParticle.status() == 1) {
-            double isoSum = particle.pfIsolationR03().sumChargedHadronPt + particle.pfIsolationR03().sumNeutralHadronEt + particle.pfIsolationR03().sumPhotonEt;
-            double particlePt = particle.pt();
-            double relIso = isoSum / particlePt;
-
-            if (isoSum < 100 && relIso < 0.15){
-                if (!particle1 || particle.pt() > particle1->pt()) {
-                    particle2 = particle1;
-                    particle1 = &particle;
-                }
-                else if (!particle2 || particle.pt() > particle2->pt()) {
-                    particle2 = &particle;
-                }
+      for (const auto& genParticle : *particles){
+         if (abs(genParticle.pdgId()) == 13 && genParticle.status() == 1) {
+            if (!particle1 || genParticle.pt() > particle1->pt()) {
+               particle2 = particle1;
+               particle1 = &genParticle;
             }
-        }
+            else if (!particle2 || genParticle.pt() > particle2->pt()) {
+               particle2 = &genParticle;
+            }
+         }
          
       }
       if (particle1 && particle2){
@@ -230,7 +229,7 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 void 
 MiniAnalyzerSimTrue::beginJob()
 {
-   fs = new TFile("simoutput.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
+   fs = new TFile("simoutputtrue1.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
 
    std::ifstream inFile("weight_sum.txt"); //weight_sum.txt for first, weight_sum2.txt for second
    if (inFile.is_open())

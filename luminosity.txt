@@ -1,0 +1,7 @@
+7625.376423231044769   range runs    G
+8869.282664404876709   range runs    H
+-------suma------16494   (dabartinis 16810)
+
+
+35917.344269025054932  muons only full
+35552.242710630493164  all validations full

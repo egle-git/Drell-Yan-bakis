@@ -4,7 +4,7 @@ def read_filelist(file):
     with open(file, 'r') as f:
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
-filelist = read_filelist("rootfilessimone.txt") #rootfilessimone.txt or rootfilessimtwo.txt
+filelist = read_filelist("rootfilessimtwo.txt") #rootfilessimone.txt or rootfilessimtwo.txt
 
 process = cms.Process("Test")
 
@@ -28,8 +28,6 @@ process.hltHighLevel = cms.EDFilter("HLTHighLevel",
 
 process.demo = cms.EDAnalyzer('MiniAnalyzerSim',
                               muons = cms.InputTag("slimmedMuons"),
-                              xsec = cms.double(6422), #6422 for first, 20480 for second
-                              lumi = cms.double(6658),
                               GenEventInfo = cms.untracked.InputTag("generator")
 )
 

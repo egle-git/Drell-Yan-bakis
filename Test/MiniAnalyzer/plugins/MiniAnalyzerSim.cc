@@ -21,6 +21,7 @@
 #include "TFile.h"
 #include "TH1D.h"
 #include <fstream>
+#include <cmath>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -80,8 +81,8 @@ class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
       TFile *fs;
 
       double weight_sum; 
-      double xsec = 6422; // 6422 for first, 20480 for second
-      double lumi = 6658;
+      double xsec = 20480; // 6422 for first, 20480 for second
+      double lumi = 16494;  //16494
 };
 
 // constants, enums and typedefs
@@ -129,8 +130,8 @@ MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    edm::Handle<GenEventInfoProduct> weightHandle;
    iEvent.getByToken(weightToken_, weightHandle);
    double event_weight = weightHandle.isValid() ? weightHandle->weight() : 1.0;
-
-   double weight = event_weight * xsec * lumi / weight_sum;
+   double norm_weight = event_weight / std::abs(event_weight);
+   double weight = norm_weight * xsec * lumi / weight_sum;
    std::cout << "weight: " << weight << std::endl;
 
    edm::Handle<std::vector<pat::Muon>> muons;
@@ -226,9 +227,9 @@ MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 void 
 MiniAnalyzerSim::beginJob()
 {
-   fs = new TFile("simoutput.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
+   fs = new TFile("simoutput2.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
 
-   std::ifstream inFile("weight_sum.txt"); //weight_sum.txt for first, weight_sum2.txt for second
+   std::ifstream inFile("weight_sum2.txt"); //weight_sum.txt for first, weight_sum2.txt for second
    if (inFile.is_open())
    {
       inFile >> weight_sum;

@@ -23,14 +23,12 @@ process.hltHighLevel = cms.EDFilter("HLTHighLevel",
    HLTPaths = cms.vstring('HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ*'),
    eventSetupPathsKey = cms.string(''),
    andOr = cms.bool(True),
-   throw = cms.bool(True)
+   throw = cms.bool(False)
 )
 
 process.demo = cms.EDAnalyzer('MiniAnalyzerSimTrue',
-                              particles = cms.InputTag("genParticles"),
-                              xsec = cms.double(6422), #6422 for first, 20480 for second
-                              lumi = cms.double(6658),
-                              GenEventInfo = cms.untracked.InputTag("generator")
+                              particles = cms.InputTag("genParticle"),
+                              GenEventInfo = cms.InputTag("generator")
 )
 
 
