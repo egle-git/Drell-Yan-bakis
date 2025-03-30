@@ -15,3 +15,11 @@ fillininat histogramas:
 combining histogramas:
 1) pereiti iš my_new_od į my_root
 2) python combiningoutput.py
+
+true muons:
+1) ConfFile_cfgSimTrue.py  -  pirmas root failas
+2) MiniAnalyzerSim.cc  -  pirma xsec vertė
+3) MiniAnalyzerSim.cc  -  pirmas output failas
+4) MiniAnalyzerSim.cc  -  pirmas weight_sum failas
+5) scram b ir cms run
+6) pakartoti su antrais failais

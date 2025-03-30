@@ -21,6 +21,7 @@
 #include "TFile.h"
 #include "TH1D.h"
 #include <fstream>
+#include <iostream>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -35,6 +36,8 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 
 // class declaration
@@ -60,8 +63,8 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
       virtual void endJob() override;
 
-      edm::EDGetTokenT<std::vector<reco::GenParticle>> particles;
       edm::EDGetTokenT<std::vector<reco::GenParticle>> GenParticleToken_;
+      //edm::EDGetTokenT<std::vector<reco::GenParticle>> GenParticleToken_;
       edm::EDGetTokenT<GenEventInfoProduct> weightToken_;
 
 
@@ -82,7 +85,7 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
       TFile *fs;
 
       double weight_sum; 
-      double xsec = 6422; // 6422 for first, 20480 for second
+      double xsec = 20480; // 6422 for first, 20480 for second
       double lumi = 16494;
 };
 
@@ -92,9 +95,8 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
 
 
 MiniAnalyzerSimTrue::MiniAnalyzerSimTrue(const edm::ParameterSet& iConfig):
-      particles(consumes<std::vector<reco::GenParticle>>(iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))),
+      GenParticleToken_(consumes<std::vector<reco::GenParticle>>(iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))),
       weightToken_(consumes<GenEventInfoProduct>(iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")))
-      //GenParticleToken_(consumes<std::vector<reco::GenParticle>>(iConfig.getUntrackedParameter<edm::InputTag>("GenParticle")))
 
 
 {
@@ -134,19 +136,18 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
    edm::Handle<GenEventInfoProduct> weightHandle;
    iEvent.getByToken(weightToken_, weightHandle);
    double event_weight = weightHandle.isValid() ? weightHandle->weight() : 1.0;
-
-   double weight = event_weight * xsec * lumi / weight_sum;
+   double norm_weight = event_weight / std::abs(event_weight);
+   double weight = norm_weight * xsec * lumi / weight_sum;
    std::cout << "weight: " << weight << std::endl;
 
    edm::Handle<std::vector<reco::GenParticle>> particles;
-   //edm::Handle<std::vector<pat::Muon>> muons;
    iEvent.getByToken(GenParticleToken_, particles);
 
    if(particles.isValid() && particles->size() > 2){
       const reco::GenParticle* particle1 = nullptr;
       const reco::GenParticle* particle2 = nullptr;
       for (const auto& genParticle : *particles){
-         if (abs(genParticle.pdgId()) == 13 && genParticle.status() == 1) {
+         if (abs(genParticle.pdgId()) == 13 ) { //&& genParticle.status() == 1
             if (!particle1 || genParticle.pt() > particle1->pt()) {
                particle2 = particle1;
                particle1 = &genParticle;
@@ -229,9 +230,9 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 void 
 MiniAnalyzerSimTrue::beginJob()
 {
-   fs = new TFile("simoutputtrue1.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
+   fs = new TFile("simoutputtrue2.root","RECREATE"); //simoutputtrue1.root for first, simoutputtrue2.root for second
 
-   std::ifstream inFile("weight_sum.txt"); //weight_sum.txt for first, weight_sum2.txt for second
+   std::ifstream inFile("weight_sum2.txt"); //weight_sum.txt for first, weight_sum2.txt for second
    if (inFile.is_open())
    {
       inFile >> weight_sum;
