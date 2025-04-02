@@ -1,36 +1,18 @@
 import ROOT
 
 file_real = ROOT.TFile.Open("output.root", "READ")
-file_sim1 = ROOT.TFile.Open("simoutputtrue1.root", "READ") #simoutput.root arba simoutputtrue1.root
-file_sim2 = ROOT.TFile.Open("simoutputtrue2.root", "READ") #simoutput2.root arba simoutputtrue2.root
+file_sim1 = ROOT.TFile.Open("simoutput.root", "READ")
+file_sim2 = ROOT.TFile.Open("simoutput2.root", "READ")
 
 
-# pat::muon
-# hist_pairs = {
-#     "h_muon_pt": "simh_muon_pt",
-#     "h_muon_eta": "simh_muon_eta",
-#     "h_muon_phi": "simh_muon_phi",
-#     "h_muon_energy": "simh_muon_energy",
-#     "h_muon_mass": "simh_muon_mass",
-#     "h_muon_leading": "simh_muon_leading",
-#     "h_muon_subleading": "simh_muon_subleading",
-#     "h_Z_pt": "simh_Z_pt",
-#     "h_Z_eta": "simh_Z_eta",
-#     "h_Z_phi": "simh_Z_phi",
-#     "h_Z_energy": "simh_Z_energy",
-#     "h_Z_mass": "simh_Z_mass",
-#     "h_Z_mass_fine": "simh_Z_mass_fine",
-# }
-
-# true muons
 hist_pairs = {
-    "h_muon_pt": "simh_particle_pt",
-    "h_muon_eta": "simh_particle_eta",
-    "h_muon_phi": "simh_particle_phi",
-    "h_muon_energy": "simh_particle_energy",
-    "h_muon_mass": "simh_particle_mass",
-    "h_muon_leading": "simh_particle_leading",
-    "h_muon_subleading": "simh_particle_subleading",
+    "h_muon_pt": "simh_muon_pt",
+    "h_muon_eta": "simh_muon_eta",
+    "h_muon_phi": "simh_muon_phi",
+    "h_muon_energy": "simh_muon_energy",
+    "h_muon_mass": "simh_muon_mass",
+    "h_muon_leading": "simh_muon_leading",
+    "h_muon_subleading": "simh_muon_subleading",
     "h_Z_pt": "simh_Z_pt",
     "h_Z_eta": "simh_Z_eta",
     "h_Z_phi": "simh_Z_phi",
@@ -38,6 +20,7 @@ hist_pairs = {
     "h_Z_mass": "simh_Z_mass",
     "h_Z_mass_fine": "simh_Z_mass_fine",
 }
+
 
 for real_name, sim_name in hist_pairs.items():
     ROOT.gStyle.SetOptStat(0)
@@ -180,7 +163,7 @@ for real_name, sim_name in hist_pairs.items():
     line.SetLineColor(ROOT.kBlack)
     line.Draw()
 
-    canvas.SaveAs(f"combtrue{real_name}.png") # combpat arba combtrue
+    canvas.SaveAs(f"combpat{real_name}.png")
 
 file_real.Close()
 file_sim1.Close()
