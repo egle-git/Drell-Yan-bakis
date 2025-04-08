@@ -85,7 +85,7 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
       TFile *fs;
 
       double weight_sum; 
-      double xsec = 20480; // 6422 for first, 20480 for second
+      double xsec = 6422; // 6422 for first, 20480 for second
       double lumi = 16494;
 };
 
@@ -144,33 +144,28 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
    iEvent.getByToken(GenParticleToken_, particles);
 
    if(particles.isValid() && particles->size() > 2){
-      const reco::GenParticle* particle1 = nullptr;
-      const reco::GenParticle* particle2 = nullptr;
+      std::vector<reco::GenParticle> selectedparticles;
       for (const auto& genParticle : *particles){
-         if (abs(genParticle.pdgId()) == 13 ) { //&& genParticle.status() == 1
-            if (!particle1 || genParticle.pt() > particle1->pt()) {
-               particle2 = particle1;
-               particle1 = &genParticle;
-            }
-            else if (!particle2 || genParticle.pt() > particle2->pt()) {
-               particle2 = &genParticle;
-            }
+         if (abs(genParticle.pdgId()) == 13 && genParticle.fromHardProcessFinalState() == true) { //&& genParticle.status() == 1  parCand.fromHardProcessFinalState()
+            selectedparticles.push_back(genParticle);
          }
          
       }
-      if (particle1 && particle2){
+      std::cout << "there are " <<  selectedparticles.size()<<" particles" << std::endl;
+      if (selectedparticles.size() == 2){
          
-         double pt1 = particle1->pt();
-         double eta1 = particle1->eta();
-         double phi1 = particle1->phi();
-         double energy1 = particle1->energy();
-         double mass1 = particle1->mass();
+         
+         double pt1 = selectedparticles[0].pt();
+         double eta1 = selectedparticles[0].eta();
+         double phi1 = selectedparticles[0].phi();
+         double energy1 = selectedparticles[0].energy();
+         double mass1 = selectedparticles[0].mass();
 
-         double pt2 = particle2->pt();
-         double eta2 = particle2->eta();
-         double phi2 = particle2->phi();
-         double energy2 = particle2->energy();
-         double mass2 = particle2->mass();
+         double pt2 = selectedparticles[1].pt();
+         double eta2 = selectedparticles[1].eta();
+         double phi2 = selectedparticles[1].phi();
+         double energy2 = selectedparticles[1].energy();
+         double mass2 = selectedparticles[1].mass();
 
          if (pt1>=20 && pt2>=12) {
             simh_particle_pt->Fill(pt1, weight);
@@ -230,9 +225,9 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 void 
 MiniAnalyzerSimTrue::beginJob()
 {
-   fs = new TFile("simoutputtrue2.root","RECREATE"); //simoutputtrue1.root for first, simoutputtrue2.root for second
+   fs = new TFile("simoutputtrue1.root","RECREATE"); //simoutputtrue1.root for first, simoutputtrue2.root for second
 
-   std::ifstream inFile("weight_sum2.txt"); //weight_sum.txt for first, weight_sum2.txt for second
+   std::ifstream inFile("weight_sum.txt"); //weight_sum.txt for first, weight_sum2.txt for second
    if (inFile.is_open())
    {
       inFile >> weight_sum;
