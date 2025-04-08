@@ -88,7 +88,7 @@ for sim_name in hist_names:
     legend.AddEntry(hist_sim2, "M-10to50", "l")
     legend.Draw()
 
-    canvas.SaveAs(f"combtrue{sim_name}.png")
+    canvas.SaveAs(f"comb_true_hist/combtrue{sim_name}.png")
 
 file_sim1.Close()
 file_sim2.Close()

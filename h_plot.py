@@ -147,7 +147,7 @@ for hist_name in histograms:
     
     hist.Draw()
 
-    canvas.SaveAs(f"{hist_name}.png")
+    canvas.SaveAs(f"real_data_hist/{hist_name}.png")
     canvas.Close()
 
 file.Close()

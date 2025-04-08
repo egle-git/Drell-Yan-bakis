@@ -163,7 +163,7 @@ for real_name, sim_name in hist_pairs.items():
     line.SetLineColor(ROOT.kBlack)
     line.Draw()
 
-    canvas.SaveAs(f"combpat{real_name}.png")
+    canvas.SaveAs(f"comb_pat_hist/combpat{real_name}.png")
 
 file_real.Close()
 file_sim1.Close()
