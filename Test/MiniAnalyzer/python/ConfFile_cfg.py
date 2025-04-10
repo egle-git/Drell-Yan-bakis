@@ -4,7 +4,7 @@ def read_filelist(file):
     with open(file, 'r') as f:
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
-filelist = read_filelist("rootfiles.txt")
+filelist = read_filelist("rootfilesnew.txt")
 
 process = cms.Process("Test")
 
@@ -19,8 +19,8 @@ process.source = cms.Source("PoolSource",
 
 process.hltHighLevel = cms.EDFilter("HLTHighLevel",
    TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
-   HLTPaths = cms.vstring('HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ*'),           # 'HLT_DoubleMu*', 'HLT_Mu17*' provide list of HLT paths (or patterns) you want
-   eventSetupPathsKey = cms.string(''), # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
+   HLTPaths = cms.vstring('HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ*'),       # provide list of HLT paths (or patterns) you want
+   eventSetupPathsKey = cms.string(''),      # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
    andOr = cms.bool(True),             # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
    throw = cms.bool(True)    # throw exception on unknown path names
 )

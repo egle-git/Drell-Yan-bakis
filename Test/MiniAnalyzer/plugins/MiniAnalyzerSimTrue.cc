@@ -81,11 +81,10 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
       TH1D *simh_Z_energy;
       TH1D *simh_Z_mass;
       TH1D *simh_Z_mass_fine;
-      TH1D *simh_Z_mass_bw;
       TFile *fs;
 
       double weight_sum; 
-      double xsec = 6422; // 6422 for first, 20480 for second
+      double xsec = 20480; // 6422 for first, 20480 for second
       double lumi = 16494;
 };
 
@@ -116,7 +115,6 @@ MiniAnalyzerSimTrue::MiniAnalyzerSimTrue(const edm::ParameterSet& iConfig):
    simh_Z_energy = new TH1D("simh_Z_energy", "Z Boson ENERGY", 100, 0, 500);
    simh_Z_mass = new TH1D("simh_Z_mass", "Z Boson MASS", 1000, 30, 1000);
    simh_Z_mass_fine = new TH1D("simh_Z_mass_fine", "Z BOSON MASS", 150, 70, 110);
-   simh_Z_mass_bw = new TH1D("simh_Z_mass_bw", "Z BOSON MASS", 150, 70, 110);
 }
 
 
@@ -200,7 +198,6 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
             simh_Z_energy->Fill(Zboson_energy, weight);
             simh_Z_mass->Fill(Zboson_mass, weight);
             simh_Z_mass_fine->Fill(Zboson_mass, weight);
-            simh_Z_mass_bw->Fill(Zboson_mass, weight);
 
             std::cout << "Z boson: pt=" << Zboson_pt << ", eta=" << Zboson_eta << ", phi=" << Zboson_phi << ", energy=" << Zboson_energy << ", mass=" << Zboson_mass<< std::endl;
          }
@@ -225,9 +222,9 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 void 
 MiniAnalyzerSimTrue::beginJob()
 {
-   fs = new TFile("simoutputtrue1.root","RECREATE"); //simoutputtrue1.root for first, simoutputtrue2.root for second
+   fs = new TFile("simoutputtrue2.root","RECREATE"); //simoutputtrue1.root for first, simoutputtrue2.root for second
 
-   std::ifstream inFile("weight_sum.txt"); //weight_sum.txt for first, weight_sum2.txt for second
+   std::ifstream inFile("weight_sum2.txt"); //weight_sum.txt for first, weight_sum2.txt for second
    if (inFile.is_open())
    {
       inFile >> weight_sum;
@@ -253,7 +250,6 @@ MiniAnalyzerSimTrue::endJob()
    simh_Z_energy->Write();
    simh_Z_mass->Write();
    simh_Z_mass_fine->Write();
-   simh_Z_mass_bw->Write();
    fs->Close();
 
 }

@@ -20,20 +20,21 @@
 #include <vector>
 #include "TFile.h"
 #include "TH1D.h"
+#include <fstream>
+#include <cmath>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 //classes to extract Muon information
 #include "DataFormats/PatCandidates/interface/Muon.h"
-
 #include "DataFormats/Math/interface/LorentzVector.h"
+
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 // class declaration
 
@@ -43,11 +44,12 @@
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
+// edm::one::WatchRuns /////after SharedResources, before >
 
-class MiniAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
+class MiniAnalyzerSimTT : public edm::one::EDAnalyzer<edm::one::SharedResources> {
    public:
-      explicit MiniAnalyzer(const edm::ParameterSet&);
-      ~MiniAnalyzer();
+      explicit MiniAnalyzerSimTT(const edm::ParameterSet&);
+      ~MiniAnalyzerSimTT();
 
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -57,24 +59,30 @@ class MiniAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
       virtual void endJob() override;
 
-      // ----------member data ---------------------------
 
       edm::EDGetTokenT<std::vector<pat::Muon>> muonToken_;
-      TH1D *h_muon_pt;
-      TH1D *h_muon_eta;
-      TH1D *h_muon_phi;
-      TH1D *h_muon_energy;
-      TH1D *h_muon_mass;
-      TH1D *h_muon_leading;
-      TH1D *h_muon_subleading;
-      TH1D *h_Z_pt;
-      TH1D *h_Z_eta;
-      TH1D *h_Z_phi;
-      TH1D *h_Z_energy;
-      TH1D *h_Z_mass;
-      TH1D *h_Z_mass_eq;
-      TH1D *h_Z_mass_fine;
+      edm::EDGetTokenT<GenEventInfoProduct> weightToken_;
+
+
+      TH1D *samh_muon_pt;
+      TH1D *simh_muon_eta;
+      TH1D *simh_muon_phi;
+      TH1D *simh_muon_energy;
+      TH1D *simh_muon_mass;
+      TH1D *simh_muon_leading;
+      TH1D *simh_muon_subleading;
+      TH1D *simh_Z_pt;
+      TH1D *simh_Z_eta;
+      TH1D *simh_Z_phi;
+      TH1D *simh_Z_energy;
+      TH1D *simh_Z_mass;
+      TH1D *simh_Z_mass_eq;
+      TH1D *simh_Z_mass_fine;
       TFile *fs;
+
+      double weight_sum; 
+      double xsec = 687;
+      double lumi = 16494;
 };
 
 // constants, enums and typedefs
@@ -82,44 +90,53 @@ class MiniAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 // constructors and destructor
 
 
-MiniAnalyzer::MiniAnalyzer(const edm::ParameterSet& iConfig): muonToken_(consumes<std::vector<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons")))
+MiniAnalyzerSimTT::MiniAnalyzerSimTT(const edm::ParameterSet& iConfig):
+      muonToken_(consumes<std::vector<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
+      weightToken_(consumes<GenEventInfoProduct>(iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")))
 
 {
    usesResource("TFileService");
-   h_muon_pt = new TH1D("h_muon_pt", "Muon PT", 100, 0, 150);
-   h_muon_eta = new TH1D("h_muon_eta", "Muon ETA", 100, -2.5, 2.5);
-   h_muon_phi = new TH1D("h_muon_phi", "Muon PHI", 100, -3.14, 3.14);
-   h_muon_energy = new TH1D("h_muon_energy", "Muon ENERGY", 100, 0, 150);
-   h_muon_mass = new TH1D("h_muon_mass", "Muon MASS", 100, 0.1055, 0.1059);
-   h_muon_leading = new TH1D("h_muon_leading", "Muon LEADING", 100, 0, 150);
-   h_muon_subleading = new TH1D("h_muon_subleading", "Muon SUBLEADING", 100, 0, 150);
+   samh_muon_pt = new TH1D("samh_muon_pt", "Muon PT", 100, 0, 150);
+   simh_muon_eta = new TH1D("simh_muon_eta", "Muon ETA", 100, -2.5, 2.5);
+   simh_muon_phi = new TH1D("simh_muon_phi", "Muon PHI", 100, -3.14, 3.14);
+   simh_muon_energy = new TH1D("simh_muon_energy", "Muon ENERGY", 100, 0, 150);
+   simh_muon_mass = new TH1D("simh_muon_mass", "Muon MASS", 100, 0.1055, 0.1059);
+   simh_muon_leading = new TH1D("simh_muon_leading", "Muon LEADING", 100, 0, 150);
+   simh_muon_subleading = new TH1D("simh_muon_subleading", "Muon SUBLEADING", 100, 0, 150);
 
    double bins[37]= {40,45,50,55,60,64,68,72,76,81,86,91,96,101,106,110,115,120,126,133,141,150,160,171,185,200,220,243,273,320,380,440,510,600,700,830,1000};
    int nbins = 36;
 
-   h_Z_pt = new TH1D("h_Z_pt", "Z Boson PT", 100, 0, 300);
-   h_Z_eta = new TH1D("h_Z_eta", "Z Boson ETA", 100, -2.5, 2.5);
-   h_Z_phi = new TH1D("h_Z_phi", "Z Boson PHI", 100, -3.14, 3.14);
-   h_Z_energy = new TH1D("h_Z_energy", "Z Boson ENERGY", 100, 0, 500);
-   h_Z_mass = new TH1D("h_Z_mass", "Z Boson MASS", nbins, bins);
-   h_Z_mass_eq = new TH1D("h_Z_mass_eq", "Z Boson MASS", 1000, 30, 1000);
-   h_Z_mass_fine = new TH1D("h_Z_mass_fine", "Z BOSON MASS", 150, 70, 110);
+
+   simh_Z_pt = new TH1D("simh_Z_pt", "Z Boson PT", 100, 0, 300);
+   simh_Z_eta = new TH1D("simh_Z_eta", "Z Boson ETA", 100, -2.5, 2.5);
+   simh_Z_phi = new TH1D("simh_Z_phi", "Z Boson PHI", 100, -3.14, 3.14);
+   simh_Z_energy = new TH1D("simh_Z_energy", "Z Boson ENERGY", 100, 0, 500);
+   simh_Z_mass = new TH1D("simh_Z_mass", "Z Boson MASS", nbins, bins);
+   simh_Z_mass_eq = new TH1D("simh_Z_mass_eq", "Z Boson MASS", 1000, 30, 1000);
+   simh_Z_mass_fine = new TH1D("simh_Z_mass_fine", "Z BOSON MASS", 150, 70, 110);
 }
 
 
-MiniAnalyzer::~MiniAnalyzer()
+MiniAnalyzerSimTT::~MiniAnalyzerSimTT()
 {
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
 }
 
-// member functions
-// ------------ method called for each event  ------------
 
 void
-MiniAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+MiniAnalyzerSimTT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+
    using namespace edm;
+
+   edm::Handle<GenEventInfoProduct> weightHandle;
+   iEvent.getByToken(weightToken_, weightHandle);
+   double event_weight = weightHandle.isValid() ? weightHandle->weight() : 1.0;
+   double norm_weight = event_weight / std::abs(event_weight);
+   double weight = norm_weight * xsec * lumi / weight_sum;
+   std::cout << "weight: " << weight << std::endl;
 
    edm::Handle<std::vector<pat::Muon>> muons;
    iEvent.getByToken(muonToken_, muons);
@@ -157,18 +174,18 @@ MiniAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          double mass2 = muon2->mass();
 
          if (pt1>=20 && pt2>=12) {
-            h_muon_pt->Fill(pt1);
-            h_muon_pt->Fill(pt2);
-            h_muon_eta->Fill(eta1);
-            h_muon_eta->Fill(eta2);
-            h_muon_phi->Fill(phi1);
-            h_muon_phi->Fill(phi2);
-            h_muon_energy->Fill(energy1);
-            h_muon_energy->Fill(energy2);
-            h_muon_mass->Fill(mass1);
-            h_muon_mass->Fill(mass2);
-            h_muon_leading->Fill(pt1);
-            h_muon_subleading->Fill(pt2);
+            samh_muon_pt->Fill(pt1, weight);
+            simh_muon_pt->Fill(pt2, weight);
+            simh_muon_eta->Fill(eta1, weight);
+            simh_muon_eta->Fill(eta2, weight);
+            simh_muon_phi->Fill(phi1, weight);
+            simh_muon_phi->Fill(phi2, weight);
+            simh_muon_energy->Fill(energy1, weight);
+            simh_muon_energy->Fill(energy2, weight);
+            simh_muon_mass->Fill(mass1, weight);
+            simh_muon_mass->Fill(mass2, weight);
+            simh_muon_leading->Fill(pt1, weight);
+            simh_muon_subleading->Fill(pt2, weight);
          
             std::cout << "Muon 1: pt=" << pt1 << ", eta=" << eta1 << ", phi=" << phi1 << ", energy=" << energy1 << ", mass=" << mass1 << std::endl;
             std::cout << "Muon 2: pt=" << pt2 << ", eta=" << eta2 << ", phi=" << phi2 << ", energy=" << energy2 << ", mass=" << mass2 << std::endl;
@@ -183,13 +200,13 @@ MiniAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             double Zboson_energy = ZbosonP4.energy();
             double Zboson_mass = ZbosonP4.mass ();
 
-            h_Z_pt->Fill(Zboson_pt);
-            h_Z_eta->Fill(Zboson_eta);
-            h_Z_phi->Fill(Zboson_phi);
-            h_Z_energy->Fill(Zboson_energy);
-            h_Z_mass->Fill(Zboson_mass);
-            h_Z_mass_eq->Fill(Zboson_mass);
-            h_Z_mass_fine->Fill(Zboson_mass);
+            simh_Z_pt->Fill(Zboson_pt, weight);
+            simh_Z_eta->Fill(Zboson_eta, weight);
+            simh_Z_phi->Fill(Zboson_phi, weight);
+            simh_Z_energy->Fill(Zboson_energy, weight);
+            simh_Z_mass->Fill(Zboson_mass, weight);
+            simh_Z_mass_eq->Fill(Zboson_mass, weight);
+            simh_Z_mass_fine->Fill(Zboson_mass, weight);
 
             std::cout << "Z boson: pt=" << Zboson_pt << ", eta=" << Zboson_eta << ", phi=" << Zboson_phi << ", energy=" << Zboson_energy << ", mass=" << Zboson_mass<< std::endl;
          }
@@ -208,41 +225,48 @@ MiniAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    ESHandle<SetupData> pSetup;
    iSetup.get<SetupRecord>().get(pSetup);
 #endif
-}
 */
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-MiniAnalyzer::beginJob()
+MiniAnalyzerSimTT::beginJob()
 {
-   fs = new TFile("outputnew.root","RECREATE");
+   fs = new TFile("simoutputtt.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
+
+   std::ifstream inFile("weight_sumtt.txt"); //weight_sum.txt for first, weight_sum2.txt for second
+   if (inFile.is_open())
+   {
+      inFile >> weight_sum;
+      inFile.close();
+   }
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-MiniAnalyzer::endJob() 
+MiniAnalyzerSimTT::endJob() 
 {
    fs->cd();
-   h_muon_pt->Write();
-   h_muon_eta->Write();
-   h_muon_phi->Write();
-   h_muon_energy->Write();
-   h_muon_mass->Write();
-   h_muon_leading->Write();
-   h_muon_subleading->Write();
-   h_Z_pt->Write();
-   h_Z_eta->Write();
-   h_Z_phi->Write();
-   h_Z_energy->Write();
-   h_Z_mass->Write();
-   h_Z_mass_eq->Write();
-   h_Z_mass_fine->Write();
+   samh_muon_pt->Write();
+   simh_muon_eta->Write();
+   simh_muon_phi->Write();
+   simh_muon_energy->Write();
+   simh_muon_mass->Write();
+   simh_muon_leading->Write();
+   simh_muon_subleading->Write();
+   simh_Z_pt->Write();
+   simh_Z_eta->Write();
+   simh_Z_phi->Write();
+   simh_Z_energy->Write();
+   simh_Z_mass->Write();
+   simh_Z_mass_eq->Write();
+   simh_Z_mass_fine->Write();
    fs->Close();
+
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-MiniAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+MiniAnalyzerSimTT::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -251,4 +275,4 @@ MiniAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(MiniAnalyzer);
+DEFINE_FWK_MODULE(MiniAnalyzerSimTT);

@@ -1,0 +1,4 @@
+#CMS_Run2016G_DoubleMuon_MINIAOD_UL2016_MiniAODv2-v1_120000_file_index.json
+root://eospublic.cern.ch//eos/opendata/cms/Run2016G/DoubleMuon/MINIAOD/UL2016_MiniAODv2-v1/120000/14459512-38DE-774F-9371-3938F3102126.root
+root://eospublic.cern.ch//eos/opendata/cms/Run2016G/DoubleMuon/MINIAOD/UL2016_MiniAODv2-v1/120000/2BD3BA2C-FC7B-AA48-8099-7B77AFFAFF6A.root
+root://eospublic.cern.ch//eos/opendata/cms/Run2016G/DoubleMuon/MINIAOD/UL2016_MiniAODv2-v1/120000/2F9480AE-570B-C745-BA95-6D3C1F757D3B.root

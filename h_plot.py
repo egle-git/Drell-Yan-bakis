@@ -7,7 +7,7 @@ file = ROOT.TFile("output.root", "READ")
 histograms = [
     "h_muon_pt", "h_muon_eta", "h_muon_phi", "h_muon_energy", 
     "h_muon_mass", "h_muon_leading", "h_muon_subleading", 
-    "h_Z_pt", "h_Z_eta", "h_Z_phi", "h_Z_energy", "h_Z_mass", "h_Z_mass_fine"
+    "h_Z_pt", "h_Z_eta", "h_Z_phi", "h_Z_energy", "h_Z_mass", "h_Z_mass_eq", "h_Z_mass_fine"
 ]
 
 ROOT.gStyle.SetOptStat(0)
@@ -119,6 +119,14 @@ for hist_name in histograms:
         h_Z_mass_rebinned.Write()
         canvas.SaveAs(f"{hist_name}_variable_bins.png")
 
+    elif hist_name == "h_Z_mass_eq":
+        hist.SetXTitle("M_{#mu#mu} (GeV)")
+        hist.SetYTitle("Entries")
+        canvas.SetLogy()
+        canvas.SetLogx()
+        hist.SetMinimum(1)
+        hist.SetTitle("Z boson mass")
+
     elif hist_name == "h_Z_mass_fine":
         hist.SetXTitle("M_{#mu#mu} (GeV)")
         hist.SetYTitle("Entries")
@@ -126,7 +134,6 @@ for hist_name in histograms:
         hist.SetTitle("Z boson mass")
         combined_func = ROOT.TF1("combined_func", "[0]/((x*x - [1]*[1])^2 + ([1]*[2])^2) + [3] + [4]*x + [5]*x*x", 80, 100)
         combined_func.SetParameters(1e10, 91.2, 2.5, 1e3, -1.0, 0.1)
-        #combined_func.SetParameters(6.6e10, 91.2, 2.5, 1e2, -1.0, 0.1)
         combined_func.SetParNames("Norm", "M (Mass)", "Gamma (Width)", "Cheb_T0", "Cheb_T1", "Cheb_T2")
         hist.GetXaxis().SetRangeUser(80, 100)
         fit_result = hist.Fit(combined_func, "S, R", "", 85, 95)

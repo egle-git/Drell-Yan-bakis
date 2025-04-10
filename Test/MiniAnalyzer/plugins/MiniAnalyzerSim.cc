@@ -76,12 +76,12 @@ class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
       TH1D *simh_Z_phi;
       TH1D *simh_Z_energy;
       TH1D *simh_Z_mass;
+      TH1D *simh_Z_mass_eq;
       TH1D *simh_Z_mass_fine;
-      TH1D *simh_Z_mass_bw;
       TFile *fs;
 
       double weight_sum; 
-      double xsec = 6422; // 6422 for first, 20480 for second
+      double xsec = 20480; // 6422 for first, 20480 for second
       double lumi = 16494;  //16494
 };
 
@@ -104,13 +104,17 @@ MiniAnalyzerSim::MiniAnalyzerSim(const edm::ParameterSet& iConfig):
    simh_muon_leading = new TH1D("simh_muon_leading", "Muon LEADING", 100, 0, 150);
    simh_muon_subleading = new TH1D("simh_muon_subleading", "Muon SUBLEADING", 100, 0, 150);
 
+   double bins[37]= {40,45,50,55,60,64,68,72,76,81,86,91,96,101,106,110,115,120,126,133,141,150,160,171,185,200,220,243,273,320,380,440,510,600,700,830,1000};
+   int nbins = 36;
+
+
    simh_Z_pt = new TH1D("simh_Z_pt", "Z Boson PT", 100, 0, 300);
    simh_Z_eta = new TH1D("simh_Z_eta", "Z Boson ETA", 100, -2.5, 2.5);
    simh_Z_phi = new TH1D("simh_Z_phi", "Z Boson PHI", 100, -3.14, 3.14);
    simh_Z_energy = new TH1D("simh_Z_energy", "Z Boson ENERGY", 100, 0, 500);
-   simh_Z_mass = new TH1D("simh_Z_mass", "Z Boson MASS", 1000, 30, 1000);
+   simh_Z_mass = new TH1D("simh_Z_mass", "Z Boson MASS", nbins, bins);
+   simh_Z_mass_eq = new TH1D("simh_Z_mass_eq", "Z Boson MASS", 1000, 30, 1000);
    simh_Z_mass_fine = new TH1D("simh_Z_mass_fine", "Z BOSON MASS", 150, 70, 110);
-   simh_Z_mass_bw = new TH1D("simh_Z_mass_bw", "Z BOSON MASS", 150, 70, 110);
 }
 
 
@@ -201,8 +205,8 @@ MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
             simh_Z_phi->Fill(Zboson_phi, weight);
             simh_Z_energy->Fill(Zboson_energy, weight);
             simh_Z_mass->Fill(Zboson_mass, weight);
+            simh_Z_mass_eq->Fill(Zboson_mass, weight);
             simh_Z_mass_fine->Fill(Zboson_mass, weight);
-            simh_Z_mass_bw->Fill(Zboson_mass, weight);
 
             std::cout << "Z boson: pt=" << Zboson_pt << ", eta=" << Zboson_eta << ", phi=" << Zboson_phi << ", energy=" << Zboson_energy << ", mass=" << Zboson_mass<< std::endl;
          }
@@ -227,9 +231,9 @@ MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 void 
 MiniAnalyzerSim::beginJob()
 {
-   fs = new TFile("simoutput.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
+   fs = new TFile("simoutput2.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
 
-   std::ifstream inFile("weight_sum.txt"); //weight_sum.txt for first, weight_sum2.txt for second
+   std::ifstream inFile("weight_sum2.txt"); //weight_sum.txt for first, weight_sum2.txt for second
    if (inFile.is_open())
    {
       inFile >> weight_sum;
@@ -254,8 +258,8 @@ MiniAnalyzerSim::endJob()
    simh_Z_phi->Write();
    simh_Z_energy->Write();
    simh_Z_mass->Write();
+   simh_Z_mass_eq->Write();
    simh_Z_mass_fine->Write();
-   simh_Z_mass_bw->Write();
    fs->Close();
 
 }
