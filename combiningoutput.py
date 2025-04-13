@@ -5,6 +5,7 @@ from array import array
 file_real = ROOT.TFile.Open("output.root", "READ")
 file_sim1 = ROOT.TFile.Open("simoutput.root", "READ")
 file_sim2 = ROOT.TFile.Open("simoutput2.root", "READ")
+file_tt = ROOT.TFile.Open("simoutputtt.root", "READ")
 
 
 hist_pairs = {

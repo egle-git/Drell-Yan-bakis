@@ -26,7 +26,7 @@ process.hltHighLevel = cms.EDFilter("HLTHighLevel",
    throw = cms.bool(True)
 )
 
-process.demo = cms.EDAnalyzer('MiniAnalyzerSim',
+process.demo = cms.EDAnalyzer('MiniAnalyzerSimTT',
                               muons = cms.InputTag("slimmedMuons"),
                               GenEventInfo = cms.untracked.InputTag("generator")
 )

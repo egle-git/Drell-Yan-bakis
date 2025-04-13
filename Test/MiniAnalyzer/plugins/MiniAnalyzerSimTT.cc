@@ -64,7 +64,7 @@ class MiniAnalyzerSimTT : public edm::one::EDAnalyzer<edm::one::SharedResources>
       edm::EDGetTokenT<GenEventInfoProduct> weightToken_;
 
 
-      TH1D *samh_muon_pt;
+      TH1D *simh_muon_pt;
       TH1D *simh_muon_eta;
       TH1D *simh_muon_phi;
       TH1D *simh_muon_energy;
@@ -96,7 +96,7 @@ MiniAnalyzerSimTT::MiniAnalyzerSimTT(const edm::ParameterSet& iConfig):
 
 {
    usesResource("TFileService");
-   samh_muon_pt = new TH1D("samh_muon_pt", "Muon PT", 100, 0, 150);
+   simh_muon_pt = new TH1D("simh_muon_pt", "Muon PT", 100, 0, 150);
    simh_muon_eta = new TH1D("simh_muon_eta", "Muon ETA", 100, -2.5, 2.5);
    simh_muon_phi = new TH1D("simh_muon_phi", "Muon PHI", 100, -3.14, 3.14);
    simh_muon_energy = new TH1D("simh_muon_energy", "Muon ENERGY", 100, 0, 150);
@@ -174,7 +174,7 @@ MiniAnalyzerSimTT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
          double mass2 = muon2->mass();
 
          if (pt1>=20 && pt2>=12) {
-            samh_muon_pt->Fill(pt1, weight);
+            simh_muon_pt->Fill(pt1, weight);
             simh_muon_pt->Fill(pt2, weight);
             simh_muon_eta->Fill(eta1, weight);
             simh_muon_eta->Fill(eta2, weight);
@@ -245,8 +245,9 @@ MiniAnalyzerSimTT::beginJob()
 void 
 MiniAnalyzerSimTT::endJob() 
 {
+   std::cout << "endJob() called" << std::endl;
    fs->cd();
-   samh_muon_pt->Write();
+   simh_muon_pt->Write();
    simh_muon_eta->Write();
    simh_muon_phi->Write();
    simh_muon_energy->Write();
