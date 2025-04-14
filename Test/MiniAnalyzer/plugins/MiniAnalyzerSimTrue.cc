@@ -141,7 +141,7 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
    edm::Handle<std::vector<reco::GenParticle>> particles;
    iEvent.getByToken(GenParticleToken_, particles);
 
-   if(particles.isValid() && particles->size() > 2){
+   if(particles.isValid() && particles->size() >= 2){
       std::vector<reco::GenParticle> selectedparticles;
       for (const auto& genParticle : *particles){
          if (abs(genParticle.pdgId()) == 13 && genParticle.fromHardProcessFinalState() == true) { //&& genParticle.status() == 1  parCand.fromHardProcessFinalState()
@@ -165,42 +165,40 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
          double energy2 = selectedparticles[1].energy();
          double mass2 = selectedparticles[1].mass();
 
-         if (pt1>=20 && pt2>=12) {
-            simh_particle_pt->Fill(pt1, weight);
-            simh_particle_pt->Fill(pt2, weight);
-            simh_particle_eta->Fill(eta1, weight);
-            simh_particle_eta->Fill(eta2, weight);
-            simh_particle_phi->Fill(phi1, weight);
-            simh_particle_phi->Fill(phi2, weight);
-            simh_particle_energy->Fill(energy1, weight);
-            simh_particle_energy->Fill(energy2, weight);
-            simh_particle_mass->Fill(mass1, weight);
-            simh_particle_mass->Fill(mass2, weight);
-            simh_particle_leading->Fill(pt1, weight);
-            simh_particle_subleading->Fill(pt2, weight);
+         simh_particle_pt->Fill(pt1, weight);
+         simh_particle_pt->Fill(pt2, weight);
+         simh_particle_eta->Fill(eta1, weight);
+         simh_particle_eta->Fill(eta2, weight);
+         simh_particle_phi->Fill(phi1, weight);
+         simh_particle_phi->Fill(phi2, weight);
+         simh_particle_energy->Fill(energy1, weight);
+         simh_particle_energy->Fill(energy2, weight);
+         simh_particle_mass->Fill(mass1, weight);
+         simh_particle_mass->Fill(mass2, weight);
+         simh_particle_leading->Fill(pt1, weight);
+         simh_particle_subleading->Fill(pt2, weight);
          
-            std::cout << "Particle 1: pt=" << pt1 << ", eta=" << eta1 << ", phi=" << phi1 << ", energy=" << energy1 << ", mass=" << mass1 << std::endl;
-            std::cout << "Particle 2: pt=" << pt2 << ", eta=" << eta2 << ", phi=" << phi2 << ", energy=" << energy2 << ", mass=" << mass2 << std::endl;
+         std::cout << "Particle 1: pt=" << pt1 << ", eta=" << eta1 << ", phi=" << phi1 << ", energy=" << energy1 << ", mass=" << mass1 << std::endl;
+         std::cout << "Particle 2: pt=" << pt2 << ", eta=" << eta2 << ", phi=" << phi2 << ", energy=" << energy2 << ", mass=" << mass2 << std::endl;
 
-            math::PtEtaPhiELorentzVector particle1P4(pt1, eta1, phi1, energy1);
-            math::PtEtaPhiELorentzVector particle2P4(pt2, eta2, phi2, energy2);
-            auto ZbosonP4 = particle1P4 + particle2P4;
+         math::PtEtaPhiELorentzVector particle1P4(pt1, eta1, phi1, energy1);
+         math::PtEtaPhiELorentzVector particle2P4(pt2, eta2, phi2, energy2);
+         auto ZbosonP4 = particle1P4 + particle2P4;
 
-            double Zboson_pt = ZbosonP4.pt();
-            double Zboson_eta = ZbosonP4.eta();
-            double Zboson_phi = ZbosonP4.phi();
-            double Zboson_energy = ZbosonP4.energy();
-            double Zboson_mass = ZbosonP4.mass ();
+         double Zboson_pt = ZbosonP4.pt();
+         double Zboson_eta = ZbosonP4.eta();
+         double Zboson_phi = ZbosonP4.phi();
+         double Zboson_energy = ZbosonP4.energy();
+         double Zboson_mass = ZbosonP4.mass ();
 
-            simh_Z_pt->Fill(Zboson_pt, weight);
-            simh_Z_eta->Fill(Zboson_eta, weight);
-            simh_Z_phi->Fill(Zboson_phi, weight);
-            simh_Z_energy->Fill(Zboson_energy, weight);
-            simh_Z_mass->Fill(Zboson_mass, weight);
-            simh_Z_mass_fine->Fill(Zboson_mass, weight);
+         simh_Z_pt->Fill(Zboson_pt, weight);
+         simh_Z_eta->Fill(Zboson_eta, weight);
+         simh_Z_phi->Fill(Zboson_phi, weight);
+         simh_Z_energy->Fill(Zboson_energy, weight);
+         simh_Z_mass->Fill(Zboson_mass, weight);
+         simh_Z_mass_fine->Fill(Zboson_mass, weight);
 
-            std::cout << "Z boson: pt=" << Zboson_pt << ", eta=" << Zboson_eta << ", phi=" << Zboson_phi << ", energy=" << Zboson_energy << ", mass=" << Zboson_mass<< std::endl;
-         }
+         std::cout << "Z boson: pt=" << Zboson_pt << ", eta=" << Zboson_eta << ", phi=" << Zboson_phi << ", energy=" << Zboson_energy << ", mass=" << Zboson_mass<< std::endl;
       }
    }
 }

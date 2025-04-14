@@ -18,14 +18,6 @@ process.source = cms.Source("PoolSource",
 )
 
 
-process.hltHighLevel = cms.EDFilter("HLTHighLevel",
-   TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
-   HLTPaths = cms.vstring('HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ*'),
-   eventSetupPathsKey = cms.string(''),
-   andOr = cms.bool(True),
-   throw = cms.bool(False)
-)
-
 process.demo = cms.EDAnalyzer('MiniAnalyzerSimTrue',
                               GenParticle = cms.untracked.InputTag("prunedGenParticles"),
                               GenEventInfo = cms.untracked.InputTag("generator")
