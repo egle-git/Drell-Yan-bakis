@@ -130,7 +130,7 @@ MiniAnalyzer_weightsum::beginJob()
 void 
 MiniAnalyzer_weightsum::endJob() 
 {
-   std::ofstream outFile("weight_sum.txt");
+   std::ofstream outFile("weight_sum2.txt");
    if (outFile.is_open())
    {
       outFile << weight_sum << std::endl;

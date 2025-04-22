@@ -81,7 +81,7 @@ class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
       TFile *fs;
 
       double weight_sum; 
-      double xsec = 6422; // 6422 for first, 20480 for second
+      double xsec = 20480; // 6422 for first, 20480 for second
       double lumi = 16494;  //16494
 };
 
@@ -231,9 +231,9 @@ MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 void 
 MiniAnalyzerSim::beginJob()
 {
-   fs = new TFile("simoutput.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
+   fs = new TFile("simoutput2.root","RECREATE"); //simoutput.root for first, simoutput2.root for second
 
-   std::ifstream inFile("weight_sum.txt"); //weight_sum.txt for first, weight_sum2.txt for second
+   std::ifstream inFile("weight_sum2.txt"); //weight_sum.txt for first, weight_sum2.txt for second
    if (inFile.is_open())
    {
       inFile >> weight_sum;
