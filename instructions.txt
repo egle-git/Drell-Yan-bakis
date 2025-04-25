@@ -23,17 +23,3 @@ true muons:
 4) MiniAnalyzerSim.cc  -  pirmas weight_sum failas
 5) scram b ir cms run
 6) pakartoti su antrais failais
-
-
-
-run:
-    experiment data
-    weight sum:
-        sim1
-        sim2
-        tt
-    sim1
-    sim2
-    tt
-    true1
-    true2

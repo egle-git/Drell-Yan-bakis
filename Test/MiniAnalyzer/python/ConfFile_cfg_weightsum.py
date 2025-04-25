@@ -4,7 +4,13 @@ def read_filelist(file):
     with open(file, 'r') as f:
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
-filelist = read_filelist("rootfilessimtt.txt") #rootfilessimone.txt or rootfilessimtwo.txt or rootfilessimtt.txt
+filelist = read_filelist("rootfilessimzz.txt")
+# rootfilessimone.txt  -  sim1
+# rootfilessimtwo.txt  -  sim2
+# rootfilessimtt.txt  -  tt
+# rootfilessimww.txt  -  ww
+# rootfilessimwz.txt  -  wz
+# rootfilessimzz.txt  -  zz
 
 process = cms.Process("Test")
 
