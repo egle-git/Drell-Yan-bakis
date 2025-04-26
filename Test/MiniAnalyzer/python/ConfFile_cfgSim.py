@@ -11,6 +11,10 @@ filelist = read_filelist("rootfilessimwz.txt")
 # rootfilessimww.txt  -  ww
 # rootfilessimwz.txt  -  wz
 # rootfilessimzz.txt  -  zz
+# rootfilessimtwtop.txt  -  twtop
+# rootfilessimtwantitop.txt  -  twantitop
+# rootfilessimtchantop.txt  -  tchantop
+# rootfilessimtchanantitop.txt  -  tchanantitop
 
 process = cms.Process("Test")
 

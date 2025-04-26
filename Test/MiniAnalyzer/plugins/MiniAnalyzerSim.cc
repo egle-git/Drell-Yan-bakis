@@ -88,6 +88,10 @@ class MiniAnalyzerSim : public edm::one::EDAnalyzer<edm::one::SharedResources> {
       // 76  -  ww
       // 28  -  wz
       // 12  -  zz
+      // 32  -  twtop
+      // 33  -  twantitop
+      // 120  -  tchantop
+      // 72  -  tchanantitop
       double lumi = 16494;
 };
 
@@ -244,6 +248,10 @@ MiniAnalyzerSim::beginJob()
    // simoutputww.root  -  ww
    // simoutputwz.root  -  wz
    // simoutputzz.root  -  zz
+   // simoutputtwtop.root  -  twtop
+   // simoutputtwantitop.root  -  twantitop
+   // simoutputtchantop.root  -  tchantop
+   // simoutputtchanantitop.root  -  tchanantitop
 
    std::ifstream inFile("weight_sumwz.txt");
    // weight_sum.txt  -  sim1
@@ -252,6 +260,10 @@ MiniAnalyzerSim::beginJob()
    // weight_sumww.txt  -  ww
    // weight_sumwz.txt  -  wz
    // weight_sumzz.txt  -  zz
+   // weight_sumtwtop.txt  -  twtop
+   // weight_sumtwantitop.txt  -  twantitop
+   // weight_sumtchantop.txt  -  tchantop
+   // weight_sumtchanantitop.txt  -  tchanantitop  
    if (inFile.is_open())
    {
       inFile >> weight_sum;

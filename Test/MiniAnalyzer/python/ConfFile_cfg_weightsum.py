@@ -11,7 +11,10 @@ filelist = read_filelist("rootfilessimzz.txt")
 # rootfilessimww.txt  -  ww
 # rootfilessimwz.txt  -  wz
 # rootfilessimzz.txt  -  zz
-
+# rootfilessimtwtop.txt  -  twtop
+# rootfilessimtwantitop.txt  -  twantitop
+# rootfilessimtchantop.txt  -  tchantop
+# rootfilessimtchanantitop.txt  -  tchanantitop
 process = cms.Process("Test")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")

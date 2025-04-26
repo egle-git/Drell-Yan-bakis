@@ -131,12 +131,16 @@ void
 MiniAnalyzer_weightsum::endJob() 
 {
    std::ofstream outFile("weight_sumzz.txt");
-   // failai: weight_sum.txt  -  sim1
-   //         weight_sum2.txt  -  sim2
-   //         weight_sumtt.txt  -  tt
-   //         weight_sumww.txt  -  ww
-   //         weight_sumwz.txt  -  wz
-   //         weight_sumzz.txt  -  zz
+   // weight_sum.txt  -  sim1
+   // weight_sum2.txt  -  sim2
+   // weight_sumtt.txt  -  tt
+   // weight_sumww.txt  -  ww
+   // weight_sumwz.txt  -  wz
+   // weight_sumzz.txt  -  zz
+   // weight_sumtwtop.txt  -  twtop
+   // weight_sumtwantitop.txt  -  twantitop
+   // weight_sumtchantop.txt  -  tchantop
+   // weight_sumtchanantitop.txt  -  tchanantitop    
    if (outFile.is_open())
    {
       outFile << weight_sum << std::endl;
