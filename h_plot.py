@@ -2,7 +2,7 @@ import ROOT
 import sys
 from array import array
 
-file = ROOT.TFile("output.root", "READ")
+file = ROOT.TFile("outputnew.root", "READ")
 
 histograms = [
     "h_muon_pt", "h_muon_eta", "h_muon_phi", "h_muon_energy", 
@@ -116,8 +116,8 @@ for hist_name in histograms:
             h_Z_mass_rebinned.SetBinError(h_Z_mass_rebinned.FindBin(bin_center), bin_error)
         h_Z_mass_rebinned.SetLineColor(ROOT.kBlue)
         h_Z_mass_rebinned.Draw("HIST")
-        h_Z_mass_rebinned.Write()
-        canvas.SaveAs(f"{hist_name}_variable_bins.png")
+        # h_Z_mass_rebinned.Write()
+        canvas.SaveAs(f"hist_real_data_hist/{hist_name}_variable_bins.png")
 
     elif hist_name == "h_Z_mass_eq":
         hist.SetXTitle("M_{#mu#mu} (GeV)")
@@ -154,7 +154,7 @@ for hist_name in histograms:
     
     hist.Draw()
 
-    canvas.SaveAs(f"real_data_hist/{hist_name}.png")
+    canvas.SaveAs(f"hist_real_data_hist/{hist_name}.png")
     canvas.Close()
 
 file.Close()

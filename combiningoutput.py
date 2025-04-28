@@ -2,10 +2,17 @@ import ROOT
 import sys
 from array import array
 
-file_real = ROOT.TFile.Open("output.root", "READ")
+file_real = ROOT.TFile.Open("outputnew.root", "READ")
 file_sim1 = ROOT.TFile.Open("simoutput.root", "READ")
 file_sim2 = ROOT.TFile.Open("simoutput2.root", "READ")
 file_tt = ROOT.TFile.Open("simoutputtt.root", "READ")
+file_twtop = ROOT.TFile.Open("simoutputtwtop.root", "READ")
+file_twantitop = ROOT.TFile.Open("simoutputtwantitop.root", "READ")
+#file_tchantop = ROOT.TFile.Open("simoutputtchantop.root", "READ")
+file_tchanantitop = ROOT.TFile.Open("simoutputtchanantitop.root", "READ")
+file_ww = ROOT.TFile.Open("simoutputww.root", "READ")
+file_wz = ROOT.TFile.Open("simoutputwz.root", "READ")
+file_zz = ROOT.TFile.Open("simoutputzz.root", "READ")
 
 
 hist_pairs = {
@@ -44,14 +51,26 @@ for real_name, sim_name in hist_pairs.items():
     hist_sim1 = file_sim1.Get(sim_name)
     hist_sim2 = file_sim2.Get(sim_name)
     hist_tt = file_tt.Get(sim_name)
-
-    hist_tt.SetLineColor(ROOT.kBlue)
-    hist_tt.SetLineWidth(2)
-    hist_tt.SetFillColor(ROOT.kBlue)
-    hist_tt.SetFillStyle(3003)
+    hist_twtop = file_twtop.Get(sim_name)
+    hist_twantitop = file_twantitop.Get(sim_name)
+    #hist_tchantop = file_tchantop.Get(sim_name)
+    hist_tchanantitop = file_tchanantitop.Get(sim_name)
+    hist_ww = file_ww.Get(sim_name)
+    hist_wz = file_wz.Get(sim_name)
+    hist_zz = file_zz.Get(sim_name)
+    
 
     hist_sim_combined = hist_sim1.Clone()
     hist_sim_combined.Add(hist_sim2)
+    hist_tt_combined = hist_tt.Clone()
+    hist_tt_combined.Add(hist_twtop)
+    hist_tt_combined.Add(hist_twantitop)
+    #hist_tt_combined.Add(hist_tchantop)
+    hist_tt_combined.Add(hist_tchanantitop)
+    hist_ew_combined = hist_ww.Clone()
+    hist_ew_combined.Add(hist_wz)
+    hist_ew_combined.Add(hist_zz)
+
 
     hist_real.SetMarkerColor(ROOT.kBlack)
     hist_real.SetMarkerSize(0.5)
@@ -59,17 +78,32 @@ for real_name, sim_name in hist_pairs.items():
     hist_sim_combined.SetLineColor(ROOT.kRed)
     hist_sim_combined.SetLineWidth(2)
     hist_sim_combined.SetFillColor(ROOT.kRed)
-    hist_sim_combined.SetFillStyle(3003)   
+    hist_sim_combined.SetFillStyle(3003)
+    hist_tt_combined.SetLineColor(ROOT.kBlue)
+    hist_tt_combined.SetLineWidth(2)
+    hist_tt_combined.SetFillColor(ROOT.kBlue)
+    hist_tt_combined.SetFillStyle(3003)
+    hist_ew_combined.SetLineColor(ROOT.kGreen)
+    hist_ew_combined.SetLineWidth(2)
+    hist_ew_combined.SetFillColor(ROOT.kGreen)
+    hist_ew_combined.SetFillStyle(3003)
+
     hist_real.SetYTitle("Entries")
     pad1.SetLogy()
     hist_real.GetXaxis().SetLabelSize(0)
-    hist_real.SetMinimum(1)
+    
 
     stack = ROOT.THStack("stack", "")
-    stack.Add(hist_tt)
+    stack.Add(hist_ew_combined)
+    stack.Add(hist_tt_combined)
     stack.Add(hist_sim_combined)
 
+    stack.SetMinimum(1)
+
     if real_name == "h_Z_mass":
+        pad1.SetLogx()
+
+    if real_name == "h_Z_mass_eq":
         pad1.SetLogx()
 
     stack.Draw("HIST")
@@ -84,7 +118,8 @@ for real_name, sim_name in hist_pairs.items():
     pad2.cd()
     pad2.Clear()
 
-    hist_mc_total = hist_tt.Clone()
+    hist_mc_total = hist_ew_combined.Clone()
+    hist_mc_total.Add(hist_tt_combined)
     hist_mc_total.Add(hist_sim_combined)
     hist_ratio = hist_real.Clone("hist_ratio")
     hist_ratio.Divide(hist_mc_total)
@@ -188,7 +223,7 @@ for real_name, sim_name in hist_pairs.items():
     line.SetLineColor(ROOT.kBlack)
     line.Draw()
 
-    canvas.SaveAs(f"comb_pat_hist/combpat{real_name}.png")
+    canvas.SaveAs(f"hist_comb_data_hist/comb{real_name}.png")
 
 
 # z_mass_bin_edges = [40,45,50,55,60,64,68,72,76,81,86,91,96,101,106,110,115,120,126,133,141,150,160,171,185,200,220,243,273,320,380,440,510,600,700,830,1000]
