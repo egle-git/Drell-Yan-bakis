@@ -5,16 +5,7 @@ def read_filelist(file):
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
 filelist = read_filelist("rootfilessimtt.txt")
-# rootfilessimone.txt  -  sim1
-# rootfilessimtwo.txt  -  sim2
-# rootfilessimtt.txt  -  tt
-# rootfilessimww.txt  -  ww
-# rootfilessimwz.txt  -  wz
-# rootfilessimzz.txt  -  zz
-# rootfilessimtwtop.txt  -  twtop
-# rootfilessimtwantitop.txt  -  twantitop
-# rootfilessimtchantop.txt  -  tchantop
-# rootfilessimtchanantitop.txt  -  tchanantitop
+
 process = cms.Process("Test")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -27,10 +18,20 @@ process.source = cms.Source("PoolSource",
 )
 
 
-process.demo = cms.EDAnalyzer('MiniAnalyzer_weightsum',
+process.hltHighLevel = cms.EDFilter("HLTHighLevel",
+   TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+   HLTPaths = cms.vstring('HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ*'),
+   eventSetupPathsKey = cms.string(''),
+   andOr = cms.bool(True),
+   throw = cms.bool(True)
+)
+
+process.demo = cms.EDAnalyzer('MiniAnalyzerSim',
                               muons = cms.InputTag("slimmedMuons"),
-                              GenEventInfo = cms.untracked.InputTag("generator")
+                              GenParticle = cms.untracked.InputTag("prunedGenParticles"),
+                              GenEventInfo = cms.untracked.InputTag("generator"),
+                              mcProcess = cms.string("tt"),
 )
 
 
-process.p = cms.Path(process.demo)
+process.p = cms.Path(process.hltHighLevel+process.demo)

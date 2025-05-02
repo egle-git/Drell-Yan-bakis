@@ -71,6 +71,9 @@ for real_name, sim_name in hist_pairs.items():
     hist_ew_combined.Add(hist_wz)
     hist_ew_combined.Add(hist_zz)
 
+    hist_real.SetYTitle("Entries")
+    pad1.SetLogy()
+    # hist_real.GetXaxis().SetLabelSize(0)
 
     hist_real.SetMarkerColor(ROOT.kBlack)
     hist_real.SetMarkerSize(0.5)
@@ -87,10 +90,6 @@ for real_name, sim_name in hist_pairs.items():
     hist_ew_combined.SetLineWidth(2)
     hist_ew_combined.SetFillColor(ROOT.kGreen)
     hist_ew_combined.SetFillStyle(3003)
-
-    hist_real.SetYTitle("Entries")
-    pad1.SetLogy()
-    hist_real.GetXaxis().SetLabelSize(0)
     
 
     stack = ROOT.THStack("stack", "")
@@ -111,8 +110,9 @@ for real_name, sim_name in hist_pairs.items():
 
     legend = ROOT.TLegend(0.8, 0.8, 0.9, 0.9)
     legend.AddEntry(hist_real, "data", "p")
-    legend.AddEntry(hist_tt, "TT", "f")
     legend.AddEntry(hist_sim_combined, "DY_MC", "f")
+    legend.AddEntry(hist_tt_combined, "TT", "f")
+    legend.AddEntry(hist_ew_combined, "EW", "f")
     legend.Draw()
 
     pad2.cd()
@@ -123,7 +123,7 @@ for real_name, sim_name in hist_pairs.items():
     hist_mc_total.Add(hist_sim_combined)
     hist_ratio = hist_real.Clone("hist_ratio")
     hist_ratio.Divide(hist_mc_total)
-    hist_ratio.GetYaxis().SetRangeUser(0, 2)
+    hist_ratio.GetYaxis().SetRangeUser(0.5, 1.5)
 
 
     if real_name == "h_muon_pt":
@@ -212,7 +212,7 @@ for real_name, sim_name in hist_pairs.items():
         line = ROOT.TLine(0, 1, 1000, 1)
 
     elif real_name == "h_Z_mass_eq":
-        line = ROOT.TLine(40, 1, 1000, 1)
+        line = ROOT.TLine(30, 1, 1000, 1)
 
     elif real_name == "h_Z_mass_fine":
         line = ROOT.TLine(80, 1, 100, 1)

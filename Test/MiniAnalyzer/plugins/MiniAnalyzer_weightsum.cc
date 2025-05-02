@@ -100,9 +100,9 @@ MiniAnalyzer_weightsum::analyze(const edm::Event& iEvent, const edm::EventSetup&
    double norm_weight = event_weight / std::abs(event_weight);
 
    weight_sum += norm_weight;
-   std::cout << "weight sum = " << weight_sum << std::endl;
-   std::cout << "event weight: " << event_weight << std::endl;
-   std::cout << "norm weight: " << norm_weight << std::endl;
+   // std::cout << "weight sum = " << weight_sum << std::endl;
+   // std::cout << "event weight: " << event_weight << std::endl;
+   // std::cout << "norm weight: " << norm_weight << std::endl;
 
 }
    
@@ -130,7 +130,7 @@ MiniAnalyzer_weightsum::beginJob()
 void 
 MiniAnalyzer_weightsum::endJob() 
 {
-   std::ofstream outFile("weight_sumtchantop.txt");
+   std::ofstream outFile("weight_sumtt.txt");
    // weight_sum.txt  -  sim1
    // weight_sum2.txt  -  sim2
    // weight_sumtt.txt  -  tt

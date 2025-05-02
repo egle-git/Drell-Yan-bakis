@@ -4,7 +4,7 @@ def read_filelist(file):
     with open(file, 'r') as f:
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
-filelist = read_filelist("rootfilessimone.txt")
+filelist = read_filelist("rootfilessimtchantop.txt")
 
 process = cms.Process("Test")
 
@@ -30,7 +30,7 @@ process.demo = cms.EDAnalyzer('MiniAnalyzerSim',
                               muons = cms.InputTag("slimmedMuons"),
                               GenParticle = cms.untracked.InputTag("prunedGenParticles"),
                               GenEventInfo = cms.untracked.InputTag("generator"),
-                              mcProcess = cms.string("sim1"),
+                              mcProcess = cms.string("tchantop"),
 )
 
 
