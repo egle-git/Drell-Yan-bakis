@@ -23,3 +23,27 @@ true muons:
 4) MiniAnalyzerSim.cc  -  pirmas weight_sum failas
 5) scram b ir cms run
 6) pakartoti su antrais failais
+
+
+
+double xsec =    ; 
+6422  -  sim1
+20480  -  sim2
+687  -  tt
+76  -  ww
+28  -  wz
+12  -  zz
+32  -  twtop
+33  -  twantitop
+120  -  tchantop
+72  -  tchanantitop
+
+
+double lumi = 16494;
+
+
+
+if (mcProcess_ == "sim1")
+   xsec = 6422; 
+else if (mcProcess_ == "sim2")
+   xsec = 20480;
