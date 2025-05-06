@@ -7,41 +7,27 @@ lumi = 16494
 xsecs = {
     "sim1": 6422,
     "sim2": 20480,
-    "tt": 687,
-    "ww": 76,
-    "wz": 28,
-    "zz": 12,
-    "twtop": 32,
-    "twantitop": 33,
-    "tchantop": 120,
-    "tchanantitop": 72,
+    "tt": 687.1,
+    "ww": 75.88,
+    "wz": 27.56,
+    "zz": 12.08,
+    "twtop": 32.45,
+    "twantitop": 32.51,
+    "tchantop": 119.7,
+    "tchanantitop": 71.74,
 }
-
-weight_sum_files = {
-    "sim1": "weight_sumtest.txt",
-    "sim2": "weight_sumtest2.txt",
-    "tt": "weight_sumtestTT.txt",
-    "ww": "weight_sumtestww.txt",
-    "wz": "weight_sumtestwz.txt",
-    "zz": "weight_sumtestzz.txt",
-    "twtop": "weight_sumtesttwtop.txt",
-    "twantitop": "weight_sumtesttwantitop.txt",
-    "tchantop": "weight_sumtesttchantop.txt",
-    "tchanantitop": "weight_sumtesttchanantitop.txt",
-}
-
 
 file_real = ROOT.TFile.Open("outputnew.root", "READ")
 file_sim1 = ROOT.TFile.Open("simoutputtest.root", "READ")
 file_sim2 = ROOT.TFile.Open("simoutputtest2.root", "READ")
 file_tt = ROOT.TFile.Open("simoutputtestTT.root", "READ")
-# file_twtop = ROOT.TFile.Open("simoutputtesttwtop.root", "READ")
-# file_twantitop = ROOT.TFile.Open("simoutputtesttwantitop.root", "READ")
+file_twtop = ROOT.TFile.Open("simoutputtesttwtop.root", "READ")
+file_twantitop = ROOT.TFile.Open("simoutputtesttwantitop.root", "READ")
 file_tchantop = ROOT.TFile.Open("simoutputtesttchantop.root", "READ")
-# file_tchanantitop = ROOT.TFile.Open("simoutputtesttchanantitop.root", "READ")
-# file_ww = ROOT.TFile.Open("simoutputtestww.root", "READ")
-# file_wz = ROOT.TFile.Open("simoutputtestwz.root", "READ")
-# file_zz = ROOT.TFile.Open("simoutputtestzz.root", "READ")
+file_tchanantitop = ROOT.TFile.Open("simoutputtesttchanantitop.root", "READ")
+file_ww = ROOT.TFile.Open("simoutputtestww.root", "READ")
+file_wz = ROOT.TFile.Open("simoutputtestwz.root", "READ")
+file_zz = ROOT.TFile.Open("simoutputtestzz.root", "READ")
 
 hist_pairs = {
     "h_muon_pt": "simh_muon_pt",
@@ -77,10 +63,8 @@ for real_name, sim_name in hist_pairs.items():
     hist_real = file_real.Get(real_name)
 
     hist_sim1 = file_sim1.Get(sim_name)
-    # hist_sim1.Scale(6422*16494/6.95194e+06)
     hist_sim1.Scale(6422*16494/4.96939e+07)
     hist_sim2 = file_sim2.Get(sim_name)
-    # hist_sim2.Scale(20480*16494/227368)
     hist_sim2.Scale(20480*16494/3.69428e+07)
 
     sim_name_DYtau = sim_name.replace("simh_", "simh_DYtau_")
@@ -95,27 +79,31 @@ for real_name, sim_name in hist_pairs.items():
     hist_sim_DYtau_combined.Add(hist_sim2_DYtau)
 
     hist_tt = file_tt.Get(sim_name)
-    # hist_tt.Scale(687*16494/4.71845e+06)
-    hist_tt.Scale(687*16494/4.32772e+07)
-    # hist_twtop = file_twtop.Get(sim_name)
-    # hist_twantitop = file_twantitop.Get(sim_name)
+    hist_tt.Scale(0.5*687.1*16494/4.32772e+07)
+    hist_twtop = file_twtop.Get(sim_name)
+    hist_twtop.Scale(32.45*16494/3.36824e+06)
+    hist_twantitop = file_twantitop.Get(sim_name)
+    hist_twantitop.Scale(32.51*16494/3.65433e+06)
     hist_tchantop = file_tchantop.Get(sim_name)
-    # hist_tchantop.Scale(120*16494/158272)
-    hist_tchantop.Scale(120*16494/5.54612e+07)
-    # hist_tchanantitop = file_tchanantitop.Get(sim_name)
-    # hist_ww = file_ww.Get(sim_name)
-    # hist_wz = file_wz.Get(sim_name)
-    # hist_zz = file_zz.Get(sim_name)
+    hist_tchantop.Scale(119.7*16494/5.54612e+07)
+    hist_tchanantitop = file_tchanantitop.Get(sim_name)
+    hist_tchanantitop.Scale(71.74*16494/2.92337e+07)
+    hist_ww = file_ww.Get(sim_name)
+    hist_ww.Scale(75.88*16494/1.5821e+07)
+    hist_wz = file_wz.Get(sim_name)
+    hist_wz.Scale(27.56*16494/7.584e+06)
+    hist_zz = file_zz.Get(sim_name)
+    hist_zz.Scale(12.08*16494/1.151e+06)
 
     hist_tt_combined = hist_tt.Clone("hist_tt_combined")
-    # hist_tt_combined.Add(hist_twtop)
-    # hist_tt_combined.Add(hist_twantitop)
+    hist_tt_combined.Add(hist_twtop)
+    hist_tt_combined.Add(hist_twantitop)
     hist_tt_combined.Add(hist_tchantop)
-    # hist_tt_combined.Add(hist_tchanantitop)
+    hist_tt_combined.Add(hist_tchanantitop)
 
-    # hist_ew_combined = hist_ww.Clone("hist_ew_combined")
-    # hist_ew_combined.Add(hist_wz)
-    # hist_ew_combined.Add(hist_zz)
+    hist_ew_combined = hist_ww.Clone("hist_ew_combined")
+    hist_ew_combined.Add(hist_wz)
+    hist_ew_combined.Add(hist_zz)
 
     hist_real.SetYTitle("Entries")
     pad1.SetLogy()
@@ -138,13 +126,13 @@ for real_name, sim_name in hist_pairs.items():
     hist_tt_combined.SetFillColor(ROOT.kBlue)
     hist_tt_combined.SetFillStyle(3003)
 
-    # hist_ew_combined.SetLineColor(ROOT.kGreen)
-    # hist_ew_combined.SetLineWidth(2)
-    # hist_ew_combined.SetFillColor(ROOT.kGreen)
-    # hist_ew_combined.SetFillStyle(3003)
+    hist_ew_combined.SetLineColor(ROOT.kGreen)
+    hist_ew_combined.SetLineWidth(2)
+    hist_ew_combined.SetFillColor(ROOT.kGreen)
+    hist_ew_combined.SetFillStyle(3003)
 
     stack = ROOT.THStack("stack", "")
-    # stack.Add(hist_ew_combined)
+    stack.Add(hist_ew_combined)
     stack.Add(hist_tt_combined)
     stack.Add(hist_sim_DYtau_combined)
     stack.Add(hist_sim_combined)
@@ -161,21 +149,20 @@ for real_name, sim_name in hist_pairs.items():
     legend.AddEntry(hist_sim_combined, "DY_MC", "f")
     legend.AddEntry(hist_sim_DYtau_combined, "DYtau_MC", "f")
     legend.AddEntry(hist_tt_combined, "TT", "f")
-    # legend.AddEntry(hist_ew_combined, "EW", "f")
+    legend.AddEntry(hist_ew_combined, "EW", "f")
     legend.Draw()
 
     pad2.cd()
     pad2.Clear()
 
-    # hist_mc_total = hist_ew_combined.Clone("hist_mc_total")
-    hist_mc_total = hist_tt_combined.Clone("hist_mc_total")
-    # hist_mc_total.Add(hist_tt_combined)
+    hist_mc_total = hist_ew_combined.Clone("hist_mc_total")
+    hist_mc_total.Add(hist_tt_combined)
     hist_mc_total.Add(hist_sim_DYtau_combined)
     hist_mc_total.Add(hist_sim_combined)
 
     hist_ratio = hist_real.Clone("hist_ratio")
     hist_ratio.Divide(hist_mc_total)
-    hist_ratio.GetYaxis().SetRangeUser(0.5, 1.5)
+    hist_ratio.GetYaxis().SetRangeUser(0.7, 1.3)
 
     titles = {
         "h_muon_pt": ("p_{T#mu} (GeV)", "Muon transverse momentum"),
