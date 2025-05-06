@@ -9,7 +9,7 @@ filelist = read_filelist("rootfilessimone.txt") #rootfilessimone.txt or rootfile
 process = cms.Process("Test")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 5
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 

@@ -9,7 +9,7 @@ filelist = read_filelist("rootfilessimww.txt")
 process = cms.Process("Test")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 5
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -26,6 +26,11 @@ process.hltHighLevel = cms.EDFilter("HLTHighLevel",
    throw = cms.bool(True)
 )
 
+process.weights = cms.EDAnalyzer('MiniAnalyzer_weightsum',
+                                 GenEventInfo = cms.untracked.InputTag("generator"),
+                                 mcProcess = cms.string("ww"),
+)
+
 process.demo = cms.EDAnalyzer('MiniAnalyzerSim',
                               muons = cms.InputTag("slimmedMuons"),
                               GenParticle = cms.untracked.InputTag("prunedGenParticles"),
@@ -34,4 +39,4 @@ process.demo = cms.EDAnalyzer('MiniAnalyzerSim',
 )
 
 
-process.p = cms.Path(process.hltHighLevel+process.demo)
+process.p = cms.Path(process.weights+process.hltHighLevel+process.demo)

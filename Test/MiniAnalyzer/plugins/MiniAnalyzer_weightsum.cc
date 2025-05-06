@@ -21,6 +21,7 @@
 #include "TFile.h"
 #include "TH1D.h"
 #include <fstream>
+#include <iostream>
 #include <cmath>
 
 // user include files
@@ -29,10 +30,6 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-//classes to extract Muon information
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/Math/interface/LorentzVector.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
@@ -59,11 +56,9 @@ class MiniAnalyzer_weightsum : public edm::one::EDAnalyzer<edm::one::SharedResou
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
       virtual void endJob() override;
 
-
-      edm::EDGetTokenT<std::vector<pat::Muon>> muonToken_;
       edm::EDGetTokenT<GenEventInfoProduct> weightToken_;
 
-
+      std::string mcProcess_;
       double weight_sum = 0; 
 };
 
@@ -73,9 +68,8 @@ class MiniAnalyzer_weightsum : public edm::one::EDAnalyzer<edm::one::SharedResou
 
 
 MiniAnalyzer_weightsum::MiniAnalyzer_weightsum(const edm::ParameterSet& iConfig):
-      muonToken_(consumes<std::vector<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muons"))),
-      weightToken_(consumes<GenEventInfoProduct>(iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")))
-
+      weightToken_(consumes<GenEventInfoProduct>(iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo"))),
+      mcProcess_(iConfig.getParameter<std::string>("mcProcess"))
     {
         usesResource("TFileService");
     }
@@ -96,14 +90,11 @@ MiniAnalyzer_weightsum::analyze(const edm::Event& iEvent, const edm::EventSetup&
    edm::Handle<GenEventInfoProduct> weightHandle;
    iEvent.getByToken(weightToken_, weightHandle);
    double event_weight = weightHandle.isValid() ? weightHandle->weight() : 1.0;
-
    double norm_weight = event_weight / std::abs(event_weight);
-
    weight_sum += norm_weight;
    // std::cout << "weight sum = " << weight_sum << std::endl;
    // std::cout << "event weight: " << event_weight << std::endl;
    // std::cout << "norm weight: " << norm_weight << std::endl;
-
 }
    
 
@@ -130,17 +121,29 @@ MiniAnalyzer_weightsum::beginJob()
 void 
 MiniAnalyzer_weightsum::endJob() 
 {
-   std::ofstream outFile("weight_sumtt.txt");
-   // weight_sum.txt  -  sim1
-   // weight_sum2.txt  -  sim2
-   // weight_sumtt.txt  -  tt
-   // weight_sumww.txt  -  ww
-   // weight_sumwz.txt  -  wz
-   // weight_sumzz.txt  -  zz
-   // weight_sumtwtop.txt  -  twtop
-   // weight_sumtwantitop.txt  -  twantitop
-   // weight_sumtchantop.txt  -  tchantop
-   // weight_sumtchanantitop.txt  -  tchanantitop    
+   std::string outputfile;
+   if (mcProcess_ == "sim1")
+      outputfile = "weight_sumtest.txt";
+   else if (mcProcess_ == "sim2")
+      outputfile = "weight_sumtest2.txt";
+   else if (mcProcess_ == "tt")
+      outputfile = "weight_sumtestTT.txt";
+   else if (mcProcess_ == "ww")
+      outputfile = "weight_sumtestww.txt";
+   else if (mcProcess_ == "wz")
+      outputfile = "weight_sumtestwz.txt";
+   else if (mcProcess_ == "zz")
+      outputfile = "weight_sumtestzz.txt";
+   else if (mcProcess_ == "twtop")
+      outputfile = "weight_sumtesttwtop.txt";
+   else if (mcProcess_ == "twantitop")
+      outputfile = "weight_sumtesttwantitop.txt";
+   else if (mcProcess_ == "tchantop")
+      outputfile = "weight_sumtesttchantop.txt";
+   else if (mcProcess_ == "tchanantitop")
+      outputfile = "weight_sumtesttchanantitop.txt";
+   std::ofstream outFile(outputfile.c_str());
+   
    if (outFile.is_open())
    {
       outFile << weight_sum << std::endl;
