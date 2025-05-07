@@ -20,19 +20,18 @@
 #include <vector>
 #include "TFile.h"
 #include "TH1D.h"
+#include <iostream>
+#include <cmath>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 //classes to extract Muon information
 #include "DataFormats/PatCandidates/interface/Muon.h"
-
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 // class declaration
@@ -170,8 +169,8 @@ MiniAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             h_muon_leading->Fill(pt1);
             h_muon_subleading->Fill(pt2);
          
-            std::cout << "Muon 1: pt=" << pt1 << ", eta=" << eta1 << ", phi=" << phi1 << ", energy=" << energy1 << ", mass=" << mass1 << std::endl;
-            std::cout << "Muon 2: pt=" << pt2 << ", eta=" << eta2 << ", phi=" << phi2 << ", energy=" << energy2 << ", mass=" << mass2 << std::endl;
+            // std::cout << "Muon 1: pt=" << pt1 << ", eta=" << eta1 << ", phi=" << phi1 << ", energy=" << energy1 << ", mass=" << mass1 << std::endl;
+            // std::cout << "Muon 2: pt=" << pt2 << ", eta=" << eta2 << ", phi=" << phi2 << ", energy=" << energy2 << ", mass=" << mass2 << std::endl;
 
             math::PtEtaPhiELorentzVector muon1P4(pt1, eta1, phi1, energy1);
             math::PtEtaPhiELorentzVector muon2P4(pt2, eta2, phi2, energy2);
@@ -191,7 +190,7 @@ MiniAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             h_Z_mass_eq->Fill(Zboson_mass);
             h_Z_mass_fine->Fill(Zboson_mass);
 
-            std::cout << "Z boson: pt=" << Zboson_pt << ", eta=" << Zboson_eta << ", phi=" << Zboson_phi << ", energy=" << Zboson_energy << ", mass=" << Zboson_mass<< std::endl;
+            // std::cout << "Z boson: pt=" << Zboson_pt << ", eta=" << Zboson_eta << ", phi=" << Zboson_phi << ", energy=" << Zboson_energy << ", mass=" << Zboson_mass<< std::endl;
          }
       }
    }

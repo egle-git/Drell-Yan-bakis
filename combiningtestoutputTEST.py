@@ -4,17 +4,56 @@ from array import array
 
 
 lumi = 16494
-xsecs = {
-    "sim1": 6422,
+xsec_shears = {
+    "sim1": 6019.939,
+    "sim2": 21037.59,
+    "tt": 88.51,
+    "twtop": 39.65,
+    "twantitop": 39.65,
+    "tchantop": 134.2,
+    "tchanantitop": 80.0,
+    "ww": 75.87,
+    "wz": 27.59,
+    "zz": 12.17,
+}
+
+xsec_genXsecAnalyzer = {
+    "sim1": 6419,
     "sim2": 20480,
-    "tt": 687,
-    "ww": 76,
-    "wz": 28,
-    "zz": 12,
-    "twtop": 32,
-    "twantitop": 33,
-    "tchantop": 120,
-    "tchanantitop": 72,
+    "tt": 687.069813,
+    "twtop": 32.445772,
+    "twantitop": 32.507616,
+    "tchantop": 119.708866,
+    "tchanantitop": 71.742864,
+    "ww": 75.87,
+    "wz": 27.56,
+    "zz": 12.14,
+}
+
+wsum_genXsecAnalyzer = {
+    "sim1": 49693940,
+    "sim2": 36942843,
+    "tt": 43277246,
+    "twtop": 6735428,
+    "twantitop": 7307629,
+    "tchantop": 110921410,
+    "tchanantitop": 58466418,
+    "ww": 15821000,
+    "wz": 7584000,
+    "zz": 1151000,
+}
+
+wsum_count = {
+    "sim1": 4.96939e+07,
+    "sim2": 3.69428e+07,
+    "tt": 4.32772e+07,
+    "twtop": 3.36824e+06,
+    "twantitop": 3.65433e+06,
+    "tchantop": 5.54612e+07,
+    "tchanantitop": 2.92337e+07,
+    "ww": 1.5821e+07,
+    "wz": 7.584e+06,
+    "zz": 1.151e+06,
 }
 
 weight_sum_files = {
@@ -32,12 +71,12 @@ weight_sum_files = {
 
 
 file_real = ROOT.TFile.Open("outputnew.root", "READ")
-file_sim1 = ROOT.TFile.Open("simoutputtest.root", "READ")
-file_sim2 = ROOT.TFile.Open("simoutputtest2.root", "READ")
-file_tt = ROOT.TFile.Open("simoutputtestTT.root", "READ")
+file_sim1 = ROOT.TFile.Open("TESTsimoutputtest.root", "READ")
+# file_sim2 = ROOT.TFile.Open("simoutputtest2.root", "READ")
+file_tt = ROOT.TFile.Open("TESTsimoutputtestTT.root", "READ")
 # file_twtop = ROOT.TFile.Open("simoutputtesttwtop.root", "READ")
 # file_twantitop = ROOT.TFile.Open("simoutputtesttwantitop.root", "READ")
-file_tchantop = ROOT.TFile.Open("simoutputtesttchantop.root", "READ")
+# file_tchantop = ROOT.TFile.Open("simoutputtesttchantop.root", "READ")
 # file_tchanantitop = ROOT.TFile.Open("simoutputtesttchanantitop.root", "READ")
 # file_ww = ROOT.TFile.Open("simoutputtestww.root", "READ")
 # file_wz = ROOT.TFile.Open("simoutputtestwz.root", "READ")
@@ -77,49 +116,53 @@ for real_name, sim_name in hist_pairs.items():
     hist_real = file_real.Get(real_name)
 
     hist_sim1 = file_sim1.Get(sim_name)
-    hist_sim1.Scale(6019.939*16494/4.96939e+07)
+    hist_sim1.Scale(6019.939*16494/1.09853e+07)
     # hist_sim1.Scale(6422*16494/4.96939e+07)
-    hist_sim2 = file_sim2.Get(sim_name)
-    hist_sim2.Scale(21037.59*16494/3.69428e+07)
+    # hist_sim2 = file_sim2.Get(sim_name)
+    # hist_sim2.Scale(21037.59*16494/3.69428e+07)
     # hist_sim2.Scale(20480*16494/3.69428e+07)
 
     sim_name_DYtau = sim_name.replace("simh_", "simh_DYtau_")
     hist_sim1_DYtau = file_sim1.Get(sim_name_DYtau)
-    hist_sim1_DYtau.Scale(6019.939*16494/4.96939e+07)
+    hist_sim1_DYtau.Scale(6019.939*16494/1.09853e+07)
     # hist_sim1_DYtau.Scale(6422*16494/4.96939e+07)
-    hist_sim2_DYtau = file_sim2.Get(sim_name_DYtau)
-    hist_sim2_DYtau.Scale(21037.59*16494/3.69428e+07)
+    # hist_sim2_DYtau = file_sim2.Get(sim_name_DYtau)
+    # hist_sim2_DYtau.Scale(21037.59*16494/3.69428e+07)
     # hist_sim2_DYtau.Scale(20480*16494/3.69428e+07)
 
     hist_sim_combined = hist_sim1.Clone("hist_sim_combined")
-    hist_sim_combined.Add(hist_sim2)
+    # hist_sim_combined.Add(hist_sim2)
     hist_sim_DYtau_combined = hist_sim1_DYtau.Clone("hist_sim_DYtau_combined")
-    hist_sim_DYtau_combined.Add(hist_sim2_DYtau)
+    # hist_sim_DYtau_combined.Add(hist_sim2_DYtau)
 
-# FIX WSUMS
     hist_tt = file_tt.Get(sim_name)
     # hist_tt.Scale(88.51*16494/4.3277246e+07)
-    hist_tt.Scale(687.069813*16494/4.3277246e+07)
+    hist_tt.Scale(687.069813*16494/8.12119e+06/2) # WHY WE NEED TO DIVIDE BY 2?
     # hist_twtop = file_twtop.Get(sim_name)
-    # hist_twtop.Scale(39.65*16494/5.54612e+07)
+    # hist_twtop.Scale(39.65*16494/6735428) # shears
+    # hist_twtop.Scale(32.445772*16494/6735428) # genXsecAnalyzer
     # hist_twantitop = file_twantitop.Get(sim_name)
-    # hist_twantitop.Scale(39.65*16494/5.54612e+07)
-    hist_tchantop = file_tchantop.Get(sim_name)
-    hist_tchantop.Scale(134.2*16494/5.54612e+07)
-    # hist_tchantop.Scale(120*16494/5.54612e+07)
+    # hist_twantitop.Scale(39.65*16494/7307629) # shears
+    # hist_twantitop.Scale(32.507616*16494/7307629) # genXsecAnalyzer
+    # hist_tchantop = file_tchantop.Get(sim_name)
+    # hist_tchantop.Scale(134.2*16494/110921410) # shears
+    # hist_tchantop.Scale(119.708866*16494/110921410) # genXsecAnalyzer
     # hist_tchanantitop = file_tchanantitop.Get(sim_name)
-    # hist_tchantop.Scale(80.0*16494/5.54612e+07)
+    # hist_tchanantitop.Scale(80.0*16494/58466418) # shears
+    # hist_tchanantitop.Scale(71.742864*16494/58466418) # genXsecAnalyzer
     # hist_ww = file_ww.Get(sim_name)
-    # hist_ww.Scale(11.09*16494/5.54612e+07)
+    # hist_ww.Scale(75.87*16494/15821000) # genXsecAnalyzer
     # hist_wz = file_wz.Get(sim_name)
-    # hist_wz.Scale(27.59*16494/5.54612e+07)
+    # hist_wz.Scale(27.59*16494/7584000) # shears
+    # hist_wz.Scale(27.56*16494/7584000) # genXsecAnalyzer
     # hist_zz = file_zz.Get(sim_name)
-    # hist_zz.Scale(12.17*16494/5.54612e+07)
+    # hist_zz.Scale(12.17*16494/1151000) # shears
+    # hist_zz.Scale(12.14*16494/1151000) # genXsecAnalyzer
 
     hist_tt_combined = hist_tt.Clone("hist_tt_combined")
     # hist_tt_combined.Add(hist_twtop)
     # hist_tt_combined.Add(hist_twantitop)
-    hist_tt_combined.Add(hist_tchantop)
+    # hist_tt_combined.Add(hist_tchantop)
     # hist_tt_combined.Add(hist_tchanantitop)
 
     # hist_ew_combined = hist_ww.Clone("hist_ew_combined")
@@ -246,4 +289,4 @@ for real_name, sim_name in hist_pairs.items():
     line.SetLineColor(ROOT.kBlack)
     line.Draw()
 
-    canvas.SaveAs(f"testcomb{real_name}.png")
+    canvas.SaveAs(f"TESTtestcomb{real_name}.png")

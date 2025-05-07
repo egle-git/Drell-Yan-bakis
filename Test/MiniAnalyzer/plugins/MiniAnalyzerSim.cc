@@ -35,8 +35,8 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
+// classes to extract GenParticle information
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
-
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 // class declaration
@@ -210,11 +210,9 @@ MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
          if (pt1>=20 && pt2>=12) {
             bool MuonsFinalState=true, TauFinalState=false;
 
-
-            edm::Handle<std::vector<reco::GenParticle>> genparticles;
-            iEvent.getByToken(GenParticleToken_, genparticles);
-
             if (mcProcess_ == "sim1" || mcProcess_ == "sim2") {
+               edm::Handle<std::vector<reco::GenParticle>> genparticles;
+               iEvent.getByToken(GenParticleToken_, genparticles);
                if(genparticles.isValid() && genparticles->size() >= 2){
                   std::vector<reco::GenParticle> selectedparticles;
                   for (const auto& genParticle : *genparticles){
@@ -317,7 +315,6 @@ MiniAnalyzerSim::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 void 
 MiniAnalyzerSim::beginJob()
 {
-
    std::string outputfile;
    if (mcProcess_ == "sim1")
       outputfile = "simoutputtest.root";
