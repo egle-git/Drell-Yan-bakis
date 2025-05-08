@@ -72,15 +72,15 @@ weight_sum_files = {
 
 file_real = ROOT.TFile.Open("outputnew.root", "READ")
 file_sim1 = ROOT.TFile.Open("TESTsimoutputtest.root", "READ")
-# file_sim2 = ROOT.TFile.Open("simoutputtest2.root", "READ")
+file_sim2 = ROOT.TFile.Open("TESTsimoutputtest2.root", "READ")
 file_tt = ROOT.TFile.Open("TESTsimoutputtestTT.root", "READ")
-# file_twtop = ROOT.TFile.Open("simoutputtesttwtop.root", "READ")
-# file_twantitop = ROOT.TFile.Open("simoutputtesttwantitop.root", "READ")
-# file_tchantop = ROOT.TFile.Open("simoutputtesttchantop.root", "READ")
-# file_tchanantitop = ROOT.TFile.Open("simoutputtesttchanantitop.root", "READ")
-# file_ww = ROOT.TFile.Open("simoutputtestww.root", "READ")
-# file_wz = ROOT.TFile.Open("simoutputtestwz.root", "READ")
-# file_zz = ROOT.TFile.Open("simoutputtestzz.root", "READ")
+file_twtop = ROOT.TFile.Open("TESTsimoutputtesttwtop.root", "READ")
+file_twantitop = ROOT.TFile.Open("TESTsimoutputtesttwantitop.root", "READ")
+file_tchantop = ROOT.TFile.Open("TESTsimoutputtesttchantop.root", "READ")
+file_tchanantitop = ROOT.TFile.Open("TESTsimoutputtesttchanantitop.root", "READ")
+file_ww = ROOT.TFile.Open("TESTsimoutputtestww.root", "READ")
+file_wz = ROOT.TFile.Open("TESTsimoutputtestwz.root", "READ")
+file_zz = ROOT.TFile.Open("TESTsimoutputtestzz.root", "READ")
 
 hist_pairs = {
     "h_muon_pt": "simh_muon_pt",
@@ -109,6 +109,7 @@ for real_name, sim_name in hist_pairs.items():
     pad2.SetTopMargin(0)
     pad2.SetBottomMargin(0.3)
     pad1.SetGrid()
+    pad2.SetGrid()
     pad1.Draw()
     pad2.Draw()
     pad1.cd()
@@ -116,63 +117,53 @@ for real_name, sim_name in hist_pairs.items():
     hist_real = file_real.Get(real_name)
 
     hist_sim1 = file_sim1.Get(sim_name)
-    hist_sim1.Scale(6019.939*16494/1.09853e+07)
-    # hist_sim1.Scale(6422*16494/4.96939e+07)
-    # hist_sim2 = file_sim2.Get(sim_name)
-    # hist_sim2.Scale(21037.59*16494/3.69428e+07)
-    # hist_sim2.Scale(20480*16494/3.69428e+07)
+    hist_sim1.Scale(xsec_genXsecAnalyzer["sim1"]*lumi/wsum_count["sim1"])
+    hist_sim2 = file_sim2.Get(sim_name)
+    hist_sim2.Scale(xsec_genXsecAnalyzer["sim2"]*lumi/wsum_count["sim2"])
+
 
     sim_name_DYtau = sim_name.replace("simh_", "simh_DYtau_")
     hist_sim1_DYtau = file_sim1.Get(sim_name_DYtau)
-    hist_sim1_DYtau.Scale(6019.939*16494/1.09853e+07)
-    # hist_sim1_DYtau.Scale(6422*16494/4.96939e+07)
-    # hist_sim2_DYtau = file_sim2.Get(sim_name_DYtau)
-    # hist_sim2_DYtau.Scale(21037.59*16494/3.69428e+07)
-    # hist_sim2_DYtau.Scale(20480*16494/3.69428e+07)
+    hist_sim1_DYtau.Scale(xsec_genXsecAnalyzer["sim1"]*lumi/wsum_count["sim1"])
+    hist_sim2_DYtau = file_sim2.Get(sim_name_DYtau)
+    hist_sim2_DYtau.Scale(xsec_genXsecAnalyzer["sim2"]*lumi/wsum_count["sim2"])
 
     hist_sim_combined = hist_sim1.Clone("hist_sim_combined")
-    # hist_sim_combined.Add(hist_sim2)
+    hist_sim_combined.Add(hist_sim2)
     hist_sim_DYtau_combined = hist_sim1_DYtau.Clone("hist_sim_DYtau_combined")
-    # hist_sim_DYtau_combined.Add(hist_sim2_DYtau)
+    hist_sim_DYtau_combined.Add(hist_sim2_DYtau)
 
     hist_tt = file_tt.Get(sim_name)
-    # hist_tt.Scale(88.51*16494/4.3277246e+07)
-    hist_tt.Scale(687.069813*16494/8.12119e+06/2) # WHY WE NEED TO DIVIDE BY 2?
-    # hist_twtop = file_twtop.Get(sim_name)
-    # hist_twtop.Scale(39.65*16494/6735428) # shears
-    # hist_twtop.Scale(32.445772*16494/6735428) # genXsecAnalyzer
-    # hist_twantitop = file_twantitop.Get(sim_name)
-    # hist_twantitop.Scale(39.65*16494/7307629) # shears
-    # hist_twantitop.Scale(32.507616*16494/7307629) # genXsecAnalyzer
-    # hist_tchantop = file_tchantop.Get(sim_name)
-    # hist_tchantop.Scale(134.2*16494/110921410) # shears
-    # hist_tchantop.Scale(119.708866*16494/110921410) # genXsecAnalyzer
-    # hist_tchanantitop = file_tchanantitop.Get(sim_name)
-    # hist_tchanantitop.Scale(80.0*16494/58466418) # shears
-    # hist_tchanantitop.Scale(71.742864*16494/58466418) # genXsecAnalyzer
-    # hist_ww = file_ww.Get(sim_name)
-    # hist_ww.Scale(75.87*16494/15821000) # genXsecAnalyzer
-    # hist_wz = file_wz.Get(sim_name)
-    # hist_wz.Scale(27.59*16494/7584000) # shears
-    # hist_wz.Scale(27.56*16494/7584000) # genXsecAnalyzer
-    # hist_zz = file_zz.Get(sim_name)
-    # hist_zz.Scale(12.17*16494/1151000) # shears
-    # hist_zz.Scale(12.14*16494/1151000) # genXsecAnalyzer
+    print(hist_tt.Integral())
+    hist_tt.Scale(xsec_genXsecAnalyzer["tt"]*lumi/wsum_count["tt"]/2)
+    hist_twtop = file_twtop.Get(sim_name)
+    hist_twtop.Scale(xsec_genXsecAnalyzer["twtop"]*lumi/wsum_count["twtop"])
+    hist_twantitop = file_twantitop.Get(sim_name)
+    hist_twantitop.Scale(xsec_genXsecAnalyzer["twantitop"]*lumi/wsum_count["twantitop"])
+    hist_tchantop = file_tchantop.Get(sim_name)
+    hist_tchantop.Scale(xsec_genXsecAnalyzer["tchantop"]*lumi/wsum_count["tchantop"])
+    hist_tchanantitop = file_tchanantitop.Get(sim_name)
+    hist_tchanantitop.Scale(xsec_genXsecAnalyzer["tchanantitop"]*lumi/wsum_count["tchanantitop"])
+    hist_ww = file_ww.Get(sim_name)
+    hist_ww.Scale(xsec_genXsecAnalyzer["ww"]*lumi/wsum_count["ww"])
+    hist_wz = file_wz.Get(sim_name)
+    hist_wz.Scale(xsec_genXsecAnalyzer["wz"]*lumi/wsum_count["wz"])
+    hist_zz = file_zz.Get(sim_name)
+    hist_zz.Scale(xsec_genXsecAnalyzer["zz"]*lumi/wsum_count["zz"])
 
-    hist_tt_combined = hist_tt.Clone("hist_tt_combined")
-    # hist_tt_combined.Add(hist_twtop)
-    # hist_tt_combined.Add(hist_twantitop)
-    # hist_tt_combined.Add(hist_tchantop)
-    # hist_tt_combined.Add(hist_tchanantitop)
+    hist_st_combined = hist_twtop.Clone("hist_st_combined")
+    hist_st_combined.Add(hist_twantitop)
+    hist_st_combined.Add(hist_tchantop)
+    hist_st_combined.Add(hist_tchanantitop)
 
-    # hist_ew_combined = hist_ww.Clone("hist_ew_combined")
-    # hist_ew_combined.Add(hist_wz)
-    # hist_ew_combined.Add(hist_zz)
+    hist_ew_combined = hist_ww.Clone("hist_ew_combined")
+    hist_ew_combined.Add(hist_wz)
+    hist_ew_combined.Add(hist_zz)
 
-    hist_real.SetYTitle("Entries")
     pad1.SetLogy()
     hist_real.SetMarkerColor(ROOT.kBlack)
-    hist_real.SetMarkerSize(0.5)
+    hist_real.SetLineColor(ROOT.kBlack)
+    hist_real.SetMarkerSize(0.65)
     hist_real.SetMarkerStyle(20)
 
     hist_sim_combined.SetLineColor(ROOT.kRed)
@@ -184,20 +175,26 @@ for real_name, sim_name in hist_pairs.items():
     hist_sim_DYtau_combined.SetLineWidth(2)
     hist_sim_DYtau_combined.SetFillColor(ROOT.kOrange)
     hist_sim_DYtau_combined.SetFillStyle(3003)
+    
+    hist_tt.SetLineColor(ROOT.kBlue)
+    hist_tt.SetLineWidth(2)
+    hist_tt.SetFillColor(ROOT.kBlue)
+    hist_tt.SetFillStyle(3003)
 
-    hist_tt_combined.SetLineColor(ROOT.kBlue)
-    hist_tt_combined.SetLineWidth(2)
-    hist_tt_combined.SetFillColor(ROOT.kBlue)
-    hist_tt_combined.SetFillStyle(3003)
+    hist_st_combined.SetLineColor(ROOT.kTeal)
+    hist_st_combined.SetLineWidth(2)
+    hist_st_combined.SetFillColor(ROOT.kTeal)
+    hist_st_combined.SetFillStyle(3003)
 
-    # hist_ew_combined.SetLineColor(ROOT.kGreen)
-    # hist_ew_combined.SetLineWidth(2)
-    # hist_ew_combined.SetFillColor(ROOT.kGreen)
-    # hist_ew_combined.SetFillStyle(3003)
+    hist_ew_combined.SetLineColor(ROOT.kGreen)
+    hist_ew_combined.SetLineWidth(2)
+    hist_ew_combined.SetFillColor(ROOT.kGreen)
+    hist_ew_combined.SetFillStyle(3003)
 
     stack = ROOT.THStack("stack", "")
-    # stack.Add(hist_ew_combined)
-    stack.Add(hist_tt_combined)
+    stack.Add(hist_ew_combined)
+    stack.Add(hist_st_combined)
+    stack.Add(hist_tt)
     stack.Add(hist_sim_DYtau_combined)
     stack.Add(hist_sim_combined)
     stack.SetMinimum(1)
@@ -205,23 +202,33 @@ for real_name, sim_name in hist_pairs.items():
     if real_name in ["h_Z_mass", "h_Z_mass_eq"]:
         pad1.SetLogx()
 
+    hist_real.Draw("PE")
     stack.Draw("HIST")
     hist_real.Draw("PE SAME")
+    hist_real.Draw("SAMEAXIS")
+    
+    stack.GetYaxis().SetTitle("Number of Events")
+    stack.GetYaxis().SetTitleSize(20)
+    stack.GetYaxis().SetTitleFont(43)
+    stack.GetYaxis().SetTitleOffset(1.5)
+    stack.GetYaxis().SetLabelSize(20)
+    stack.GetYaxis().SetLabelFont(43)
 
-    legend = ROOT.TLegend(0.75, 0.75, 0.9, 0.9)
-    legend.AddEntry(hist_real, "Data", "p")
-    legend.AddEntry(hist_sim_combined, "DY_MC", "f")
-    legend.AddEntry(hist_sim_DYtau_combined, "DYtau_MC", "f")
-    legend.AddEntry(hist_tt_combined, "TT", "f")
-    # legend.AddEntry(hist_ew_combined, "EW", "f")
+    legend = ROOT.TLegend(0.65, 0.65, 0.9, 0.9)
+    legend.AddEntry(hist_real, "Data", "pl")
+    legend.AddEntry(hist_sim_combined, "DY #rightarrow #mu#mu", "f")
+    legend.AddEntry(hist_sim_DYtau_combined, "DY #rightarrow #tau#tau", "f")
+    legend.AddEntry(hist_tt, "t#bar{t}", "f")
+    legend.AddEntry(hist_st_combined, "Single top", "f")
+    legend.AddEntry(hist_ew_combined, "EW", "f")
     legend.Draw()
 
     pad2.cd()
     pad2.Clear()
 
-    # hist_mc_total = hist_ew_combined.Clone("hist_mc_total")
-    hist_mc_total = hist_tt_combined.Clone("hist_mc_total")
-    # hist_mc_total.Add(hist_tt_combined)
+    hist_mc_total = hist_ew_combined.Clone("hist_mc_total")
+    hist_mc_total.Add(hist_tt)
+    hist_mc_total.Add(hist_st_combined)
     hist_mc_total.Add(hist_sim_DYtau_combined)
     hist_mc_total.Add(hist_sim_combined)
 
@@ -257,23 +264,25 @@ for real_name, sim_name in hist_pairs.items():
     if real_name == "h_Z_mass_fine":
         hist_ratio.GetXaxis().SetRangeUser(80, 100)
 
-    hist_ratio.SetLineColor(ROOT.kBlue)
+    hist_ratio.SetLineColor(ROOT.kBlack)
+    hist_ratio.SetMarkerColor(ROOT.kBlack)
     hist_ratio.SetMarkerStyle(20)
-    hist_ratio.SetMarkerSize(0.5)
+    hist_ratio.SetMarkerSize(0.65)
     hist_ratio.SetTitle("")
 
     hist_ratio.GetYaxis().SetTitle("Data / MC")
+    hist_ratio.GetYaxis().CenterTitle()
     hist_ratio.GetYaxis().SetNdivisions(505)
-    hist_ratio.GetYaxis().SetTitleSize(16)
+    hist_ratio.GetYaxis().SetTitleSize(20)
     hist_ratio.GetYaxis().SetTitleFont(43)
-    hist_ratio.GetYaxis().SetTitleOffset(2)
+    hist_ratio.GetYaxis().SetTitleOffset(1.5)
     hist_ratio.GetYaxis().SetLabelFont(43)
-    hist_ratio.GetYaxis().SetLabelSize(16)
-    hist_ratio.GetXaxis().SetTitleSize(16)
+    hist_ratio.GetYaxis().SetLabelSize(20)
+    hist_ratio.GetXaxis().SetTitleSize(25)
     hist_ratio.GetXaxis().SetTitleFont(43)
-    hist_ratio.GetXaxis().SetTitleOffset(2)
+    hist_ratio.GetXaxis().SetTitleOffset(1)
     hist_ratio.GetXaxis().SetLabelFont(43)
-    hist_ratio.GetXaxis().SetLabelSize(16)
+    hist_ratio.GetXaxis().SetLabelSize(20)
 
     hist_ratio.Draw("PE")
 
