@@ -31,8 +31,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 //classes to extract Muon information
-#include "DataFormats/PatCandidates/interface/Muon.h"
-
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
@@ -64,7 +62,6 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
       virtual void endJob() override;
 
       edm::EDGetTokenT<std::vector<reco::GenParticle>> GenParticleToken_;
-      //edm::EDGetTokenT<std::vector<reco::GenParticle>> GenParticleToken_;
       edm::EDGetTokenT<GenEventInfoProduct> weightToken_;
 
 
@@ -83,9 +80,7 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
       TH1D *simh_Z_mass_fine;
       TFile *fs;
 
-      double weight_sum; 
-      double xsec = 6422; // 6422 for first, 20480 for second
-      double lumi = 16494;
+      std::string mcProcess_;
 };
 
 // constants, enums and typedefs
@@ -95,9 +90,8 @@ class MiniAnalyzerSimTrue : public edm::one::EDAnalyzer<edm::one::SharedResource
 
 MiniAnalyzerSimTrue::MiniAnalyzerSimTrue(const edm::ParameterSet& iConfig):
       GenParticleToken_(consumes<std::vector<reco::GenParticle>>(iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))),
-      weightToken_(consumes<GenEventInfoProduct>(iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")))
-
-
+      weightToken_(consumes<GenEventInfoProduct>(iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo"))),
+      mcProcess_(iConfig.getParameter<std::string>("mcProcess"))
 {
 
    usesResource("TFileService");
@@ -113,7 +107,7 @@ MiniAnalyzerSimTrue::MiniAnalyzerSimTrue(const edm::ParameterSet& iConfig):
    simh_Z_eta = new TH1D("simh_Z_eta", "Z Boson ETA", 100, -2.5, 2.5);
    simh_Z_phi = new TH1D("simh_Z_phi", "Z Boson PHI", 100, -3.14, 3.14);
    simh_Z_energy = new TH1D("simh_Z_energy", "Z Boson ENERGY", 100, 0, 500);
-   simh_Z_mass = new TH1D("simh_Z_mass", "Z Boson MASS", 1000, 30, 1000);
+   simh_Z_mass = new TH1D("simh_Z_mass", "Z Boson MASS", 1000, 10, 990);
    simh_Z_mass_fine = new TH1D("simh_Z_mass_fine", "Z BOSON MASS", 150, 70, 110);
 }
 
@@ -128,15 +122,13 @@ MiniAnalyzerSimTrue::~MiniAnalyzerSimTrue()
 void
 MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-
    using namespace edm;
 
    edm::Handle<GenEventInfoProduct> weightHandle;
    iEvent.getByToken(weightToken_, weightHandle);
    double event_weight = weightHandle.isValid() ? weightHandle->weight() : 1.0;
    double norm_weight = event_weight / std::abs(event_weight);
-   double weight = norm_weight * xsec * lumi / weight_sum;
-   std::cout << "weight: " << weight << std::endl;
+   double weight = norm_weight;
 
    edm::Handle<std::vector<reco::GenParticle>> particles;
    iEvent.getByToken(GenParticleToken_, particles);
@@ -144,15 +136,12 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
    if(particles.isValid() && particles->size() >= 2){
       std::vector<reco::GenParticle> selectedparticles;
       for (const auto& genParticle : *particles){
-         if (abs(genParticle.pdgId()) == 13 && genParticle.fromHardProcessFinalState() == true) { //&& genParticle.status() == 1  parCand.fromHardProcessFinalState()
+         if (abs(genParticle.pdgId()) == 13 && genParticle.isHardProcess() == true) { //&& genParticle.status() == 1  parCand.fromHardProcessFinalState()
             selectedparticles.push_back(genParticle);
          }
          
       }
-      std::cout << "there are " <<  selectedparticles.size()<<" particles" << std::endl;
-      if (selectedparticles.size() == 2){
-         
-         
+      if (selectedparticles.size() == 2){ 
          double pt1 = selectedparticles[0].pt();
          double eta1 = selectedparticles[0].eta();
          double phi1 = selectedparticles[0].phi();
@@ -178,8 +167,8 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
          simh_particle_leading->Fill(pt1, weight);
          simh_particle_subleading->Fill(pt2, weight);
          
-         std::cout << "Particle 1: pt=" << pt1 << ", eta=" << eta1 << ", phi=" << phi1 << ", energy=" << energy1 << ", mass=" << mass1 << std::endl;
-         std::cout << "Particle 2: pt=" << pt2 << ", eta=" << eta2 << ", phi=" << phi2 << ", energy=" << energy2 << ", mass=" << mass2 << std::endl;
+         // std::cout << "Particle 1: pt=" << pt1 << ", eta=" << eta1 << ", phi=" << phi1 << ", energy=" << energy1 << ", mass=" << mass1 << std::endl;
+         // std::cout << "Particle 2: pt=" << pt2 << ", eta=" << eta2 << ", phi=" << phi2 << ", energy=" << energy2 << ", mass=" << mass2 << std::endl;
 
          math::PtEtaPhiELorentzVector particle1P4(pt1, eta1, phi1, energy1);
          math::PtEtaPhiELorentzVector particle2P4(pt2, eta2, phi2, energy2);
@@ -198,7 +187,7 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
          simh_Z_mass->Fill(Zboson_mass, weight);
          simh_Z_mass_fine->Fill(Zboson_mass, weight);
 
-         std::cout << "Z boson: pt=" << Zboson_pt << ", eta=" << Zboson_eta << ", phi=" << Zboson_phi << ", energy=" << Zboson_energy << ", mass=" << Zboson_mass<< std::endl;
+         // std::cout << "Z boson: pt=" << Zboson_pt << ", eta=" << Zboson_eta << ", phi=" << Zboson_phi << ", energy=" << Zboson_energy << ", mass=" << Zboson_mass<< std::endl;
       }
    }
 }
@@ -220,14 +209,13 @@ MiniAnalyzerSimTrue::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 void 
 MiniAnalyzerSimTrue::beginJob()
 {
-   fs = new TFile("simoutputtrue1.root","RECREATE"); //simoutputtrue1.root for first, simoutputtrue2.root for second
+   std::string outputfile;
+   if (mcProcess_ == "sim1")
+      outputfile = "simoutputtrue1.root";
+   else if (mcProcess_ == "sim2")
+      outputfile = "simoutputtrue2.root";
 
-   std::ifstream inFile("weight_sum.txt"); //weight_sum.txt for first, weight_sum2.txt for second
-   if (inFile.is_open())
-   {
-      inFile >> weight_sum;
-      inFile.close();
-   }
+   fs = new TFile(outputFile,"RECREATE"); //simoutputtrue1.root for first, simoutputtrue2.root for second
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

@@ -4,12 +4,12 @@ def read_filelist(file):
     with open(file, 'r') as f:
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
-filelist = read_filelist("rootfilessimone.txt") #rootfilessimone.txt or rootfilessimtwo.txt
+filelist = read_filelist("rootfilessimtwo.txt") #rootfilessimone.txt or rootfilessimtwo.txt
 
 process = cms.Process("Test")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -20,7 +20,8 @@ process.source = cms.Source("PoolSource",
 
 process.demo = cms.EDAnalyzer('MiniAnalyzerSimTrue',
                               GenParticle = cms.untracked.InputTag("prunedGenParticles"),
-                              GenEventInfo = cms.untracked.InputTag("generator")
+                              GenEventInfo = cms.untracked.InputTag("generator"),
+                              mcProcess = cms.string("sim2"),
 )
 
 
