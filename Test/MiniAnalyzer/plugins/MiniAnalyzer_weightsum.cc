@@ -128,6 +128,8 @@ MiniAnalyzer_weightsum::endJob()
       outputfile = "weight_sumtest2.txt";
    else if (mcProcess_ == "tt")
       outputfile = "weight_sumtestTT.txt";
+   else if (mcProcess_ == "tt_inclusive")
+      outputfile = "weight_sumtestTTinclusive.txt";
    else if (mcProcess_ == "ww")
       outputfile = "weight_sumtestww.txt";
    else if (mcProcess_ == "wz")

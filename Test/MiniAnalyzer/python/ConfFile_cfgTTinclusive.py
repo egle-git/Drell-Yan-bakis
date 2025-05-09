@@ -28,14 +28,14 @@ process.hltHighLevel = cms.EDFilter("HLTHighLevel",
 
 process.weights = cms.EDAnalyzer('MiniAnalyzer_weightsum',
                                  GenEventInfo = cms.untracked.InputTag("generator"),
-                                 mcProcess = cms.string("tt"),
+                                 mcProcess = cms.string("tt_inclusive"),
 )
 
 process.demo = cms.EDAnalyzer('MiniAnalyzerSim',
                               muons = cms.InputTag("slimmedMuons"),
                               GenParticle = cms.untracked.InputTag("prunedGenParticles"),
                               GenEventInfo = cms.untracked.InputTag("generator"),
-                              mcProcess = cms.string("tt"),
+                              mcProcess = cms.string("tt_inclusive"),
 )
 
 

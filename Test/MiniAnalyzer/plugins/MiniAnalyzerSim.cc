@@ -322,6 +322,8 @@ MiniAnalyzerSim::beginJob()
       outputfile = "simoutputtest2.root";
    else if (mcProcess_ == "tt")
       outputfile = "simoutputtestTT.root";
+   else if (mcProcess_ == "tt_inclusive")
+      outputfile = "simoutputtestTTinclusive.root";
    else if (mcProcess_ == "ww")
       outputfile = "simoutputtestww.root";
    else if (mcProcess_ == "wz")
