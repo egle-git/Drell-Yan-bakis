@@ -214,7 +214,7 @@ MiniAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 MiniAnalyzer::beginJob()
 {
-   fs = new TFile("outputnew.root","RECREATE");
+   fs = new TFile("TESToutputnew.root","RECREATE");
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
