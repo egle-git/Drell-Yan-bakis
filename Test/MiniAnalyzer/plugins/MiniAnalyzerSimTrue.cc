@@ -215,7 +215,7 @@ MiniAnalyzerSimTrue::beginJob()
    else if (mcProcess_ == "sim2")
       outputfile = "simoutputtrue2.root";
 
-   fs = new TFile(outputFile,"RECREATE"); //simoutputtrue1.root for first, simoutputtrue2.root for second
+   fs = new TFile(outputfile.c_str(),"RECREATE"); //simoutputtrue1.root for first, simoutputtrue2.root for second
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
