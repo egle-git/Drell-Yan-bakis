@@ -213,6 +213,11 @@ for real_name, sim_name in hist_pairs.items():
     stack.GetYaxis().SetTitleOffset(1.5)
     stack.GetYaxis().SetLabelSize(20)
     stack.GetYaxis().SetLabelFont(43)
+    if real_name in ["h_Z_mass", "h_Z_mass_eq"]:
+        stack.GetXaxis().SetMoreLogLabels()
+        stack.GetXaxis().SetNoExponent()
+        hist_real.GetXaxis().SetMoreLogLabels()
+        hist_real.GetXaxis().SetNoExponent()
 
     legend = ROOT.TLegend(0.65, 0.65, 0.9, 0.9)
     legend.AddEntry(hist_real, "Data", "pl")
